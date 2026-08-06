@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Every Network Protocol Explained — Tanlish Guide</title>
+<style>
+  :root{
+    --bg:#0a0d12;
+    --bg-panel:#11151d;
+    --bg-panel-2:#161c26;
+    --line:#232a37;
+    --cyan:#3ddc97;
+    --red:#ff4d5e;
+    --amber:#ffb238;
+    --blue:#4da3ff;
+    --text:#e8edf2;
+    --text-dim:#8a94a3;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --disp:'Arial Black','Helvetica Neue',var(--sans);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+  a{color:var(--cyan); text-decoration:none;}
+
+  /* ===== BACKGROUND GRID TEXTURE ===== */
+  .grid-bg{
+    position:fixed; inset:0; z-index:-1; opacity:.35;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:80px 20px 40px;
+    overflow:hidden;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    letter-spacing:.25em;
+    text-transform:uppercase;
+    font-size:.72rem;
+    color:var(--amber);
+    border:1px solid rgba(255,178,56,.35);
+    padding:6px 14px;
+    border-radius:999px;
+    background:rgba(255,178,56,.06);
+    margin-bottom:28px;
+  }
+  .hero h1{
+    font-family:var(--disp);
+    text-transform:uppercase;
+    font-weight:900;
+    letter-spacing:-.01em;
+    font-size:clamp(2.1rem, 7vw, 4.6rem);
+    line-height:1.02;
+    max-width:16ch;
+  }
+  .hero h1 .hl{
+    background:linear-gradient(90deg, var(--red), var(--amber) 45%, var(--cyan) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p.sub{
+    margin-top:22px;
+    max-width:640px;
+    color:var(--text-dim);
+    font-size:clamp(1rem,2.4vw,1.15rem);
+  }
+  .hero p.sub b{color:var(--text); font-weight:600;}
+
+  /* radial diagram */
+  .radial-wrap{ width:min(720px, 92vw); margin:52px auto 10px; }
+  .radial-wrap svg{ width:100%; height:auto; overflow:visible; }
+  .node-label{ font-family:var(--mono); font-size:12.5px; fill:var(--text); }
+  .node-pill{ fill:var(--bg-panel-2); stroke:var(--line); stroke-width:1; }
+  .wire{ fill:none; stroke-width:1.6; opacity:.85; }
+  .wire.pulse{ stroke-dasharray:6 8; animation:dash 3.2s linear infinite; }
+  @keyframes dash{ to{ stroke-dashoffset:-140; } }
+  .globe-ring{ fill:none; stroke:var(--line); stroke-width:1; }
+  .globe-core{ fill:url(#coreGrad); }
+
+  .scroll-cue{
+    margin-top:44px;
+    font-family:var(--mono);
+    font-size:.75rem;
+    color:var(--text-dim);
+    letter-spacing:.15em;
+    text-transform:uppercase;
+  }
+
+  /* ===== STICKY NAV ===== */
+  .nav-wrap{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,13,18,.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-scroll{
+    display:flex; gap:8px; overflow-x:auto;
+    padding:12px 16px;
+    scrollbar-width:none;
+  }
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-pill{
+    flex:0 0 auto;
+    font-family:var(--mono);
+    font-size:.78rem;
+    color:var(--text-dim);
+    border:1px solid var(--line);
+    padding:7px 13px;
+    border-radius:999px;
+    white-space:nowrap;
+    transition:.15s;
+  }
+  .nav-pill:hover, .nav-pill.active{
+    color:var(--bg);
+    background:var(--cyan);
+    border-color:var(--cyan);
+  }
+
+  /* ===== INTRO STRIP ===== */
+  .intro{
+    max-width:880px; margin:70px auto 10px; padding:0 20px;
+  }
+  .intro h2{
+    font-family:var(--disp); text-transform:uppercase; font-size:1.5rem;
+    color:var(--amber); margin-bottom:14px; letter-spacing:.01em;
+  }
+  .intro p{color:var(--text-dim); font-size:1.02rem;}
+  .intro p + p{margin-top:12px;}
+
+  /* ===== PROTOCOL SECTIONS ===== */
+  .protocols{ max-width:1120px; margin:0 auto; padding:60px 20px 40px; }
+
+  .proto{
+    border:1px solid var(--line);
+    background:linear-gradient(180deg, var(--bg-panel), var(--bg-panel-2));
+    border-radius:18px;
+    padding:clamp(20px,4vw,40px);
+    margin-bottom:34px;
+    scroll-margin-top:80px;
+    position:relative;
+    overflow:hidden;
+  }
+  .proto::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:4px;
+    background:var(--accent, var(--cyan));
+  }
+  .proto-head{
+    display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .proto-port{
+    font-family:var(--mono);
+    font-size:.78rem;
+    color:var(--accent, var(--cyan));
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.03);
+    padding:5px 11px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .proto-title-wrap{flex:1; min-width:220px;}
+  .proto-title{
+    font-family:var(--disp); text-transform:uppercase;
+    font-size:clamp(1.4rem,3vw,2rem);
+    letter-spacing:-.01em;
+  }
+  .proto-full{
+    font-family:var(--mono); font-size:.85rem; color:var(--text-dim); margin-top:4px;
+  }
+
+  .proto-grid{
+    display:grid; grid-template-columns:1.1fr .9fr; gap:34px; align-items:start;
+  }
+  @media (max-width:820px){
+    .proto-grid{grid-template-columns:1fr;}
+  }
+
+  .proto-body h4{
+    font-family:var(--mono); text-transform:uppercase; letter-spacing:.1em;
+    font-size:.75rem; color:var(--accent,var(--cyan)); margin:20px 0 8px;
+  }
+  .proto-body h4:first-child{margin-top:0;}
+  .proto-body p{color:var(--text); font-size:.98rem;}
+  .proto-body ol, .proto-body ul{ padding-left:1.2em; color:var(--text); font-size:.96rem; }
+  .proto-body li{margin-bottom:6px;}
+
+  .example-box{
+    margin-top:8px;
+    border-left:3px solid var(--amber);
+    background:rgba(255,178,56,.06);
+    padding:12px 16px;
+    border-radius:0 10px 10px 0;
+    font-size:.95rem;
+  }
+  .example-box b{color:var(--amber);}
+
+  .diagram-box{
+    background:rgba(255,255,255,.02);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+  }
+  .diagram-box svg{width:100%; height:auto; display:block;}
+  .diagram-caption{
+    font-family:var(--mono); font-size:.72rem; color:var(--text-dim);
+    text-align:center; margin-top:10px; letter-spacing:.03em;
+  }
+
+  .dtext{ font-family:var(--mono); font-size:11px; fill:var(--text-dim); }
+  .dtext-strong{ font-family:var(--mono); font-size:11px; fill:var(--text); font-weight:700;}
+  .dbox{ fill:var(--bg-panel-2); stroke:var(--line); stroke-width:1.2; rx:8; }
+  .darrow{ stroke-width:1.8; fill:none; }
+
+  /* footer */
+  /* ===== SITE LOAD FLOW ===== */
+  .siteflow{
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,.015));
+    border-top:1px solid var(--line);
+    padding:70px 20px 90px;
+  }
+  .siteflow-inner{ max-width:1100px; margin:0 auto; text-align:center; }
+  .siteflow-title{
+    font-family:var(--disp); text-transform:uppercase;
+    font-size:clamp(1.5rem,4vw,2.4rem);
+    letter-spacing:-.01em;
+    margin-bottom:14px;
+  }
+  .siteflow-sub{ color:var(--text-dim); max-width:640px; margin:0 auto 44px; }
+  .flow-cols{
+    display:grid; grid-template-columns:1fr 1fr; gap:26px;
+    text-align:left;
+  }
+  @media (max-width:760px){ .flow-cols{grid-template-columns:1fr;} }
+  .flow-col{
+    border:1px solid var(--line);
+    border-top:3px solid var(--fc);
+    background:var(--bg-panel);
+    border-radius:16px;
+    padding:26px;
+  }
+  .flow-col-head{
+    font-family:var(--mono); font-size:.85rem; color:var(--fc);
+    margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .flow-steps{ list-style:none; padding:0; margin:0; position:relative; }
+  .flow-steps li{
+    display:flex; gap:14px; margin-bottom:20px; position:relative;
+  }
+  .flow-steps li:not(:last-child)::after{
+    content:""; position:absolute; left:13px; top:28px; bottom:-20px;
+    width:1px; background:var(--line);
+  }
+  .fn{
+    flex:0 0 auto; width:27px; height:27px; border-radius:50%;
+    background:var(--bg-panel-2); border:1px solid var(--fc); color:var(--fc);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:.78rem; font-weight:700;
+    z-index:1;
+  }
+  .flow-steps li > div{ font-size:.92rem; color:var(--text); padding-top:3px; }
+  .flow-steps li > div br + text, .flow-steps li > div{ line-height:1.5; }
+  .flow-steps b{ color:var(--fc); }
+  .flow-risk{
+    margin-top:6px; padding:12px 14px; border-radius:10px;
+    border:1px solid rgba(255,77,94,.35); color:#ff8891; font-size:.85rem;
+    background:rgba(255,77,94,.06);
+  }
+  .flow-note{
+    margin-top:36px; text-align:left; max-width:900px; margin-inline:auto;
+    color:var(--text-dim); font-size:.92rem;
+    border-left:3px solid var(--amber); padding:12px 18px;
+    background:rgba(255,178,56,.05); border-radius:0 10px 10px 0;
+  }
+  .flow-note b{ color:var(--amber); }
+
+  /* ===== SCROLL PROGRESS BAR ===== */
+  .progress-bar{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg, var(--red), var(--amber), var(--cyan));
+    z-index:100;
+    transition:width .1s linear;
+  }
+
+  /* ===== BACK TO TOP ===== */
+  .back-to-top{
+    position:fixed; right:20px; bottom:20px; z-index:60;
+    width:46px; height:46px; border-radius:50%;
+    background:var(--bg-panel-2); border:1px solid var(--line);
+    color:var(--cyan); font-size:1.1rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; opacity:0; pointer-events:none;
+    transform:translateY(10px);
+    transition:opacity .25s, transform .25s, border-color .2s, box-shadow .2s;
+    box-shadow:0 4px 20px rgba(0,0,0,.4);
+  }
+  .back-to-top.show{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  .back-to-top:hover{ border-color:var(--cyan); box-shadow:0 0 22px rgba(61,220,151,.35); }
+
+  /* card hover glow — genZ touch */
+  .proto{ transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+  .proto:hover{
+    transform:translateY(-3px);
+    border-color:color-mix(in srgb, var(--accent, var(--cyan)) 45%, var(--line));
+    box-shadow:0 12px 40px -12px color-mix(in srgb, var(--accent, var(--cyan)) 35%, transparent);
+  }
+  @media (hover:none){ .proto:hover{ transform:none; } }
+
+  .hero h1 .hl{ background-size:200% auto; animation:shimmer 6s ease-in-out infinite; }
+  @keyframes shimmer{
+    0%,100%{ background-position:0% 50%; }
+    50%{ background-position:100% 50%; }
+  }
+
+  /* ===== SECURITY SECTION ===== */
+  .security{
+    background:linear-gradient(180deg, rgba(255,77,94,.03), transparent 40%);
+    border-top:1px solid var(--line);
+    padding:70px 20px 30px;
+  }
+  .security-inner{ max-width:1120px; margin:0 auto; }
+  .security-head{ text-align:center; max-width:680px; margin:0 auto 46px; }
+  .security-head h2{
+    font-family:var(--disp); text-transform:uppercase;
+    font-size:clamp(1.5rem,4vw,2.4rem); letter-spacing:-.01em; margin-bottom:14px;
+  }
+  .security-head p{ color:var(--text-dim); }
+
+  .attack-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; margin-bottom:50px;
+  }
+  @media (max-width:900px){ .attack-grid{grid-template-columns:1fr;} }
+  .attack-card{
+    background:var(--bg-panel); border:1px solid var(--line);
+    border-top:3px solid var(--ac, var(--red));
+    border-radius:16px; padding:24px;
+    transition:transform .25s, box-shadow .25s;
+  }
+  .attack-card:hover{ transform:translateY(-3px); box-shadow:0 12px 34px -14px color-mix(in srgb, var(--ac, var(--red)) 40%, transparent); }
+  .attack-card .a-eyebrow{
+    font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.12em;
+    color:var(--ac, var(--red)); margin-bottom:6px; display:block;
+  }
+  .attack-card h3{ font-family:var(--disp); text-transform:uppercase; font-size:1.2rem; margin-bottom:10px; }
+  .attack-card p{ color:var(--text-dim); font-size:.9rem; margin-bottom:14px; }
+  .attack-card ul{ padding-left:1.1em; font-size:.87rem; color:var(--text); }
+  .attack-card li{ margin-bottom:7px; }
+  .attack-card li b{ color:var(--ac, var(--red)); }
+
+  .pentest-flow{
+    display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+    margin:0 auto 50px; max-width:960px;
+  }
+  .pentest-step{
+    flex:1 1 150px;
+    background:var(--bg-panel-2); border:1px solid var(--line); border-radius:12px;
+    padding:16px 14px; text-align:center; position:relative;
+  }
+  .pentest-step .ps-num{ font-family:var(--mono); font-size:.72rem; color:var(--amber); display:block; margin-bottom:6px;}
+  .pentest-step .ps-title{ font-weight:700; font-size:.92rem; margin-bottom:4px; }
+  .pentest-step .ps-desc{ font-size:.78rem; color:var(--text-dim); }
+  .pentest-arrow{ display:flex; align-items:center; color:var(--text-dim); font-size:1.1rem; }
+  @media (max-width:760px){ .pentest-arrow{ transform:rotate(90deg); } }
+
+  .checklist-wrap h3{
+    font-family:var(--disp); text-transform:uppercase; font-size:1.3rem;
+    text-align:center; margin-bottom:24px; color:var(--cyan);
+  }
+  .checklist-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:14px;
+  }
+  .check-item{
+    display:flex; gap:12px; align-items:flex-start;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px;
+  }
+  .check-item .ci-mark{ color:var(--cyan); font-weight:900; flex:0 0 auto; }
+  .check-item .ci-text b{ display:block; font-size:.9rem; margin-bottom:2px; }
+  .check-item .ci-text span{ font-size:.8rem; color:var(--text-dim); }
+
+  footer{
+    max-width:880px; margin:30px auto 90px; padding:0 20px;
+    color:var(--text-dim); font-size:.9rem; text-align:center;
+  }
+  footer .sig{
+    font-family:var(--mono); color:var(--text); margin-top:8px; font-size:.85rem;
+  }
+
+  /* focus visibility */
+  a:focus-visible, .nav-pill:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="progress-bar" id="progressBar"></div>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <span class="eyebrow">Complete Guide · Tanlish Explanation</span>
+  <h1>Every <span class="hl">Network Protocol</span> Explained</h1>
+  <p class="sub">HTTP la irundhu SNMP varaikkum — <b>ellame ore page-la</b>, real world examples oda, diagram oda, "eppadi work aagum" nu step-by-step ah. SSL/TLS um add pannirukom, adha miss pannalama!</p>
+
+  <div class="radial-wrap">
+    <svg viewBox="0 0 700 420">
+      <defs>
+        <radialGradient id="coreGrad" cx="35%" cy="35%" r="70%">
+          <stop offset="0%" stop-color="#2a3a4a"/>
+          <stop offset="100%" stop-color="#0e131a"/>
+        </radialGradient>
+      </defs>
+      <!-- globe -->
+      <g transform="translate(350,210)">
+        <circle class="globe-core" r="46"/>
+        <ellipse class="globe-ring" rx="46" ry="18"/>
+        <ellipse class="globe-ring" rx="46" ry="18" transform="rotate(60)"/>
+        <ellipse class="globe-ring" rx="46" ry="18" transform="rotate(120)"/>
+        <circle class="globe-ring" r="46"/>
+      </g>
+
+      <!-- left side (red) -->
+      <g stroke="var(--red)">
+        <path class="wire pulse" d="M350,210 C260,210 220,90 100,70"/>
+        <path class="wire pulse" d="M350,210 C260,210 200,150 70,150"/>
+        <path class="wire pulse" d="M350,210 C260,210 200,270 70,270"/>
+        <path class="wire pulse" d="M350,210 C260,210 220,330 100,350"/>
+      </g>
+      <!-- right side (cyan) -->
+      <g stroke="var(--cyan)">
+        <path class="wire pulse" d="M350,210 C440,210 480,90 600,70"/>
+        <path class="wire pulse" d="M350,210 C440,210 500,150 630,150"/>
+        <path class="wire pulse" d="M350,210 C440,210 500,270 630,270"/>
+        <path class="wire pulse" d="M350,210 C440,210 480,330 600,350"/>
+      </g>
+
+      <!-- left labels -->
+      <g>
+        <rect class="node-pill" x="30" y="55" width="88" height="30" rx="15"/>
+        <text class="node-label" x="46" y="75">HTTP/S</text>
+        <rect class="node-pill" x="0" y="135" width="88" height="30" rx="15"/>
+        <text class="node-label" x="18" y="155">FTP</text>
+        <rect class="node-pill" x="0" y="255" width="88" height="30" rx="15"/>
+        <text class="node-label" x="20" y="275">TCP</text>
+        <rect class="node-pill" x="30" y="335" width="88" height="30" rx="15"/>
+        <text class="node-label" x="46" y="355">IP / UDP</text>
+      </g>
+      <!-- right labels -->
+      <g>
+        <rect class="node-pill" x="582" y="55" width="88" height="30" rx="15"/>
+        <text class="node-label" x="600" y="75">DNS</text>
+        <rect class="node-pill" x="612" y="135" width="88" height="30" rx="15"/>
+        <text class="node-label" x="628" y="155">DHCP</text>
+        <rect class="node-pill" x="612" y="255" width="88" height="30" rx="15"/>
+        <text class="node-label" x="626" y="275">SSH</text>
+        <rect class="node-pill" x="582" y="335" width="98" height="30" rx="15"/>
+        <text class="node-label" x="598" y="355">SNMP/IMAP</text>
+      </g>
+
+      <!-- SSL/TLS badge sitting on the globe -->
+      <g transform="translate(350,210)">
+        <text text-anchor="middle" y="5" font-family="var(--mono)" font-size="11" fill="#ffb238" font-weight="700">TLS</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="scroll-cue">Scroll pannunga ↓ ella protocol um keezhe irukku</div>
+</header>
+
+<!-- ============ NAV ============ -->
+<nav class="nav-wrap">
+  <div class="nav-scroll" id="navScroll">
+    <a class="nav-pill" href="#http">HTTP</a>
+    <a class="nav-pill" href="#https">HTTPS</a>
+    <a class="nav-pill" href="#ssltls">SSL/TLS</a>
+    <a class="nav-pill" href="#ftp">FTP</a>
+    <a class="nav-pill" href="#tcp">TCP</a>
+    <a class="nav-pill" href="#ip">IP</a>
+    <a class="nav-pill" href="#privpub">Private/Public IP</a>
+    <a class="nav-pill" href="#udp">UDP</a>
+    <a class="nav-pill" href="#dns">DNS</a>
+    <a class="nav-pill" href="#dnssec">DNSSEC</a>
+    <a class="nav-pill" href="#dhcp">DHCP</a>
+    <a class="nav-pill" href="#websocket">WebSocket</a>
+    <a class="nav-pill" href="#ssh">SSH</a>
+    <a class="nav-pill" href="#snmp">SNMP</a>
+    <a class="nav-pill" href="#imap">IMAP</a>
+    <a class="nav-pill" href="#restapi">REST API</a>
+    <a class="nav-pill" href="#security">Website Security</a>
+    <a class="nav-pill" href="#siteflow">Site Load Flow</a>
+  </div>
+</nav>
+
+<!-- ============ INTRO ============ -->
+<section class="intro">
+  <h2>Enna Idhu Protocol Nu Sollradhu?</h2>
+  <p>Protocol nu solra vaartha ellarukkum theriyara madhiri irukum, aana simple ah sonna: <b>oru "rule book"</b> — rendu computer/device pesikka (communicate panna) follow pannanum nu set pannina rules. Nee oru foreign country ku poitu andha country language pesama English la pesa mudiyathu, adha madhiri than computers kum oru common "language" venum — adhu than protocol.</p>
+  <p>Indha page la irukura 13 protocols ellame internet function aagurathukku backbone. Ovvondrayum <b>Tanlish la</b> — enna, eppadi work aagudhu, engeyellam real life la use aagudhu nu — full ah paakalam. Ready ah? Poyi paarpom!</p>
+</section>
+
+<!-- ============ PROTOCOLS ============ -->
+<main class="protocols">
+
+  <!-- ===================== HTTP ===================== -->
+  <article class="proto" id="http" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">PORT 80</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">HTTP</div>
+        <div class="proto-full">HyperText Transfer Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Browser oda webpage ah kekkurathukku (request pannurathukku) use pannura basic rule book than HTTP. Nee browser la oru website address type panna, browser andha website oda server kitta "enakku indha page kaatu" nu HTTP moolam kekkum, server andha page anupputhum.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Browser (client) server ku <b>HTTP Request</b> anupputhu — "GET /index.html" mathiri.</li>
+          <li>Server request ah process pannitu <b>HTTP Response</b> anupputhu — HTML, CSS, images.</li>
+          <li>Response oda <b>status code</b> irukkum — 200 (OK), 404 (Not Found), 500 (Server Error) mathiri.</li>
+          <li>HTTP <b>stateless</b> — ovvoru request um independent, server ku previous request nyabagam irukathu.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Nee google.com type pannumbothu, browser HTTP request anupputhu, Google server search page anupputhu — adhu than HTTP in action.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <rect class="dbox" x="10" y="70" width="80" height="60" rx="8"/>
+          <text class="dtext-strong" x="24" y="104">Browser</text>
+          <rect class="dbox" x="210" y="70" width="80" height="60" rx="8"/>
+          <text class="dtext-strong" x="228" y="104">Server</text>
+          <path class="darrow" stroke="#4da3ff" d="M92,88 L208,88" marker-end="url(#arrB)"/>
+          <text class="dtext" x="105" y="80">GET /page</text>
+          <path class="darrow" stroke="#3ddc97" d="M208,112 L92,112" marker-end="url(#arrG)"/>
+          <text class="dtext" x="112" y="132">200 OK + HTML</text>
+          <defs>
+            <marker id="arrB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker>
+            <marker id="arrG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">REQUEST → RESPONSE CYCLE</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== HTTPS ===================== -->
+  <article class="proto" id="https" style="--accent:#3ddc97">
+    <div class="proto-head">
+      <span class="proto-port">PORT 443</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">HTTPS</div>
+        <div class="proto-full">HTTP Secure (HTTP + SSL/TLS)</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>HTTPS na basic ah HTTP than, aana <b>SSL/TLS encryption</b> layer add panniruppanga. Adhaan data ellam encrypt panni anuppudhu, so middle la yaaravadhu data ah steal panna try pannalum, adhu scramble aana text ah than kaanum, padikka mudiyathu.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Browser and server, TLS Handshake moolam "secure channel" onnu create pannikuranga (SSL/TLS section paaru).</li>
+          <li>Andha secure channel vazhiyaa than actual HTTP data (login, card details) anuppuranga.</li>
+          <li>Browser address bar la <b>padlock icon</b> kaanum — "idhu safe" nu indicate pannurathukku.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Online banking, Amazon checkout, Gmail login — ella sensitive site um HTTPS than use pannum. URL la "https://" nu irundha andha site secure nu artham.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <rect class="dbox" x="10" y="70" width="80" height="60" rx="8"/>
+          <text class="dtext-strong" x="24" y="104">Browser</text>
+          <rect class="dbox" x="210" y="70" width="80" height="60" rx="8"/>
+          <text class="dtext-strong" x="238" y="104">Bank</text>
+          <rect x="120" y="82" width="60" height="36" rx="18" fill="none" stroke="#3ddc97" stroke-width="1.6" stroke-dasharray="4 4"/>
+          <text class="dtext" x="130" y="105" fill="#3ddc97">🔒 TLS</text>
+        </svg>
+        <div class="diagram-caption">DATA TRAVELS INSIDE ENCRYPTED TUNNEL</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== SSL/TLS ===================== -->
+  <article class="proto" id="ssltls" style="--accent:#ffb238">
+    <div class="proto-head">
+      <span class="proto-port">PORT 443 (HTTPS) · VARIES BY SERVICE</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">SSL / TLS</div>
+        <div class="proto-full">Secure Sockets Layer / Transport Layer Security</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Original image la idhu miss aayirundhuchu, so ithu mukkiyama add pannirukom! SSL um TLS um <b>encryption protocols</b> — HTTPS, email, VPN ellam idha use pannuthan secure ah irukanga.</p>
+
+        <h4>SSL um TLS um Same-aa? — Clear Difference</h4>
+        <p>Illai, <b>literally same illai</b> — aana pesumbodhu ellarum "SSL" nu than solvaanga, artham "TLS" than.</p>
+        <ul>
+          <li><b>SSL</b> (versions 1.0/2.0/3.0) — original protocol, <b>ella version-um deprecated</b> ippo, security vulnerabilities (eg: POODLE attack) irukku, use pannakoodathu.</li>
+          <li><b>TLS</b> (versions 1.0/1.1/1.2/1.3) — SSL-oda successor. TLS 1.0/1.1 <b>um deprecated</b>. Ippo ella modern website-um <b>TLS 1.2 or TLS 1.3</b> than use pannuthu.</li>
+          <li>Adhunala: "SSL certificate" nu solraanga na, real-a andha certificate <b>TLS</b>-ku than use aaguthu — "SSL" nu peru mattum industry habit-la stay aayiduchu.</li>
+        </ul>
+
+        <h4>Port Address — Idhu Fixed Port Illai!</h4>
+        <p>SSL/TLS oru <b>separate port illai</b> — idhu oru <b>encryption layer</b>, existing protocol mele (top-la) wrap pannikkum. Adhunala port number depend aaguthu, <b>eppadi (edhukku) TLS use pannuthu</b> nu:</p>
+        <table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:.88rem;">
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; font-family:var(--mono); color:var(--amber);">443</td><td style="padding:6px 4px;">HTTPS — normal secure web browsing</td></tr>
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; font-family:var(--mono); color:var(--amber);">465 / 587</td><td style="padding:6px 4px;">SMTPS — secure email sending</td></tr>
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; font-family:var(--mono); color:var(--amber);">993</td><td style="padding:6px 4px;">IMAPS — secure email fetching (IMAP + TLS)</td></tr>
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; font-family:var(--mono); color:var(--amber);">995</td><td style="padding:6px 4px;">POP3S — secure email download</td></tr>
+          <tr><td style="padding:6px 4px; font-family:var(--mono); color:var(--amber);">636</td><td style="padding:6px 4px;">LDAPS — secure directory access</td></tr>
+        </table>
+
+        <h4>Eppadi Work Aagum — TLS Handshake</h4>
+        <ol>
+          <li><b>Client Hello:</b> Browser server kitta "hi, enakku secure connection venum" nu sollum, adhoda supported encryption methods list.</li>
+          <li><b>Server Hello + Certificate:</b> Server thanoda <b>TLS certificate</b> anuppum (idhu server oda identity proof, trusted authority sign panniruppanga).</li>
+          <li><b>Key Exchange:</b> Rendu side um sernthu oru <b>shared secret key</b> create pannikuranga (public-key cryptography use panni).</li>
+          <li><b>Encrypted Session Start:</b> Ippo andha shared key vachu, ella data um encrypt/decrypt pannuranga — idhu than "secure connection".</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Nee net banking la login pannumbothu certificate check aagum (padlock icon click panni paaru — "Issued by DigiCert" mathiri kaanum). Adhu than TLS certificate — port 443 vazhiyaa than idhu ella work aaguthu.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 220">
+          <rect class="dbox" x="10" y="20" width="80" height="44" rx="8"/>
+          <text class="dtext-strong" x="24" y="46">Client</text>
+          <rect class="dbox" x="210" y="20" width="80" height="44" rx="8"/>
+          <text class="dtext-strong" x="228" y="46">Server</text>
+          <path class="darrow" stroke="#ffb238" d="M92,45 L208,45" marker-end="url(#arrY)"/>
+          <text class="dtext" x="100" y="38">1. Client Hello</text>
+          <path class="darrow" stroke="#ffb238" d="M208,80 L92,80" marker-end="url(#arrY2)"/>
+          <text class="dtext" x="92" y="74">2. Server Hello + Cert</text>
+          <path class="darrow" stroke="#ffb238" d="M92,115 L208,115" marker-end="url(#arrY)"/>
+          <text class="dtext" x="90" y="108">3. Key Exchange</text>
+          <rect x="60" y="140" width="180" height="40" rx="20" fill="none" stroke="#3ddc97" stroke-width="1.6"/>
+          <text class="dtext" x="95" y="164" fill="#3ddc97">4. Encrypted Session 🔒</text>
+          <defs>
+            <marker id="arrY" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="arrY2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">TLS HANDSHAKE — RUNS OVER PORT 443 FOR HTTPS</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== FTP ===================== -->
+  <article class="proto" id="ftp" style="--accent:#ff4d5e">
+    <div class="proto-head">
+      <span class="proto-port">PORT 21 / 20</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">FTP</div>
+        <div class="proto-full">File Transfer Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Files ah oru computer la irundhu vera server ku upload pannurathukkum, download pannurathukkum use pannura protocol. Website hosting panravanga, developers ellam files ah server ku transfer panna FTP use pannuvanga.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>FTP client software (FileZilla mathiri) use panni server kitta connect aaganum — username/password vechi.</li>
+          <li>Connect aana pinnadi, files ah drag-and-drop panni upload/download panlaam.</li>
+          <li>Rendu channels use aagum — <b>command channel (port 21)</b> instructions ku, <b>data channel (port 20)</b> actual file transfer ku.</li>
+          <li>⚠️ Plain FTP encrypt aagathu — password um data um plain text ah than poidum. Adhunala <b>FTPS</b> or <b>SFTP</b> (secure versions) recommend pannuvanga.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Web developer oru website build pannitu, andha HTML/CSS files ah hosting server ku FTP moolam upload pannuvaan.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <rect class="dbox" x="10" y="70" width="80" height="60" rx="8"/>
+          <text class="dtext-strong" x="26" y="104">Client</text>
+          <rect class="dbox" x="210" y="70" width="80" height="60" rx="8"/>
+          <text class="dtext-strong" x="228" y="104">FTP Srv</text>
+          <path class="darrow" stroke="#ff4d5e" d="M92,85 L208,85" marker-end="url(#arrR)"/>
+          <text class="dtext" x="105" y="78">Upload file</text>
+          <path class="darrow" stroke="#ff4d5e" d="M208,115 L92,115" marker-end="url(#arrR2)"/>
+          <text class="dtext" x="98" y="132">Download file</text>
+          <defs>
+            <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="arrR2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">TWO CHANNELS — COMMAND + DATA</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== TCP ===================== -->
+  <article class="proto" id="tcp" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">TRANSPORT LAYER</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">TCP</div>
+        <div class="proto-full">Transmission Control Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>TCP oru <b>reliable, connection-oriented</b> protocol — data anuppurathukku munnadi rendu devices um oru "connection" establish panniduvanga, apparam data packets order la, loss illama pogum nu guarantee pannum.</p>
+        <h4>Eppadi Work Aagum — 3-Way Handshake</h4>
+        <ol>
+          <li><b>SYN:</b> Client server kitta "connect aaganuma?" nu kekkum.</li>
+          <li><b>SYN-ACK:</b> Server "sari, connect aagalam" nu reply pannum.</li>
+          <li><b>ACK:</b> Client confirm pannum — connection establish aayiduchu.</li>
+          <li>Ippo data transfer start aagum — packets order la poganum, edhavadhu packet miss aana, athai TCP marupadiyum anuppum.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> File download pannumbothu, oru single byte kooda miss aagakoodathu illa na file corrupt aagidum — adhunala TCP use pannuvanga (email, web browsing, file transfer ellame TCP than).</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <rect class="dbox" x="10" y="20" width="70" height="40" rx="8"/>
+          <text class="dtext-strong" x="24" y="44">Client</text>
+          <rect class="dbox" x="220" y="20" width="70" height="40" rx="8"/>
+          <text class="dtext-strong" x="234" y="44">Server</text>
+          <path class="darrow" stroke="#4da3ff" d="M80,55 L220,80" marker-end="url(#s1)"/>
+          <text class="dtext" x="110" y="60">SYN</text>
+          <path class="darrow" stroke="#3ddc97" d="M220,100 L80,125" marker-end="url(#s2)"/>
+          <text class="dtext" x="105" y="105">SYN-ACK</text>
+          <path class="darrow" stroke="#ffb238" d="M80,145 L220,170" marker-end="url(#s3)"/>
+          <text class="dtext" x="115" y="150">ACK</text>
+          <defs>
+            <marker id="s1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker>
+            <marker id="s2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="s3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">TCP 3-WAY HANDSHAKE</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== IP ===================== -->
+  <article class="proto" id="ip" style="--accent:#3ddc97">
+    <div class="proto-head">
+      <span class="proto-port">NETWORK LAYER</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">IP</div>
+        <div class="proto-full">Internet Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Internet la irukura ovvoru device kum oru unique <b>address</b> kudukkurathu than IP. Idhu illama data ah enga anuppanum nu theriyaamal poidum. IP address oru device oda "veedu number" mathiri nu nenachukonga.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Ovvoru device kum (phone, laptop, router) oru IP address assign aagum.</li>
+          <li>Data packets small pieces ah split aagi, ovvoru packet-leyum source and destination IP address irukkum.</li>
+          <li>Routers indha IP address ah paathu, correct path la packet ah anuppuranga (routing).</li>
+          <li><b>IPv4</b> (192.168.1.1 mathiri, 4 billion addresses) old standard; <b>IPv6</b> (adhigam addresses ku) puthusa vandhurukku.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Nee "what is my IP" nu google search panna, un device oda public IP address kaatum — adhu than internet la un "identity".</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <rect class="dbox" x="10" y="80" width="70" height="40" rx="8"/>
+          <text class="dtext" x="18" y="103" font-size="10">192.168.1.5</text>
+          <rect class="dbox" x="115" y="80" width="70" height="40" rx="8"/>
+          <text class="dtext-strong" x="135" y="103">Router</text>
+          <rect class="dbox" x="220" y="80" width="70" height="40" rx="8"/>
+          <text class="dtext" x="228" y="103" font-size="10">203.0.113.9</text>
+          <path class="darrow" stroke="#3ddc97" d="M80,100 L115,100" marker-end="url(#ip1)"/>
+          <path class="darrow" stroke="#3ddc97" d="M185,100 L220,100" marker-end="url(#ip2)"/>
+          <defs>
+            <marker id="ip1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="ip2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">EVERY DEVICE = UNIQUE ADDRESS</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== PRIVATE vs PUBLIC IP ===================== -->
+  <article class="proto" id="privpub" style="--accent:#ffb238">
+    <div class="proto-head">
+      <span class="proto-port">ADDRESSING CONCEPT</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Private IP vs Public IP</div>
+        <div class="proto-full">Two Types of IP Address Everyone Has</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Definition</h4>
+        <p><b>Private IP</b> — un home/office network <b>inside</b>-la mattum use aagura address. Idhu <b>router</b> assign pannum (DHCP moolam), and idhu internet-la route aagaathu — velila irundhu direct-a idha reach pannave mudiyaathu. Range: <code style="font-family:var(--mono)">192.168.x.x</code>, <code style="font-family:var(--mono)">10.x.x.x</code>, <code style="font-family:var(--mono)">172.16.x.x – 172.31.x.x</code>.</p>
+        <p><b>Public IP</b> — un ISP (Airtel, Jio, BSNL) kudukkura address, idhu <b>whole internet-le unique</b>. Velila irukkura ella server um, un network-ah identify pannurathukku indha address-ah than use pannum.</p>
+        <h4>Eppadi Rendum Connect Aagum — NAT</h4>
+        <ol>
+          <li>Un veedu-la irukkura phone, laptop, smart TV — ellathukkum router <b>private IP</b> kudukkum (192.168.1.x mathiri) — DHCP process-la paathom illa.</li>
+          <li>Indha devices ella internet-ku poganum na, router oda <b>NAT (Network Address Translation)</b> feature, ella private IP-yayum <b>ore public IP</b>-ku "translate" pannum.</li>
+          <li>Internet-la irukkura server (eg: youtube.com), un router oda public IP-ah than paakkum — inside-la irukkura individual private IP-a paakkave maattaanga.</li>
+          <li>Response vandhu, router adha correct device-ku (correct private IP-ku) route pannum.</li>
+        </ol>
+        <h4>Real World Example</h4>
+        <p>Un veetu WiFi-la phone <code style="font-family:var(--mono)">192.168.1.5</code>, laptop <code style="font-family:var(--mono)">192.168.1.6</code> nu private IP irukkum. Aana rendu devices um internet-ku poganum na, ISP kudutha <b>ore public IP</b> (eg: 49.207.x.x) than velila kaanpikkum. "What is my IP" nu Google search panna kidaikkura address — adhu un <b>public IP</b>, un phone settings-la irukkura WiFi IP — adhu <b>private IP</b>.</p>
+
+        <h4>❓ "Private IP Share Pannina System Hack Aaguma?"</h4>
+        <div class="example-box" style="border-left-color:#3ddc97; background:rgba(61,220,151,.08);">
+          <b>Correct Answer: Illai, direct-a hack aagaathu.</b> Private IP address (192.168.x.x mathiri) internet-la <b>route aagaathu</b> — adhunala velila irukkura yaaravadhu, un private IP number-ah mattum vechi, direct-a un network-ku vandhu connect panna <b>mudiyaathu</b>. Adhu un veetu inside-oda address than, outside world-ku andha address "meaning" edhume illa.
+        </div>
+        <p style="margin-top:14px;">Aana idhu safe nu artham illa — real risk enga irukku nu paakalam:</p>
+        <ul>
+          <li><b>Same WiFi/network-la irundha:</b> Coffee shop WiFi mathiri public network-la, un private IP-ah yaaravadhu therinjukittu, andha network <b>inside-le</b> attack panna try pannalam (file sharing vulnerabilities, weak passwords) — idhu than real risk.</li>
+          <li><b>Public IP + open ports:</b> Un router-la "port forwarding" set pannirundha, and andha port-la vulnerable service run aaguthu na, attacker un <b>public IP</b>-ah scan panni exploit panna try pannalam. Idhu than real danger — private IP alla, public IP + weak security combination.</li>
+          <li><b>Malware / phishing:</b> Miga adhikam hacks nadakuradhu IP address theriyum-nu alla — weak password, phishing link click panradhu, outdated software moolam than.</li>
+        </ul>
+        <div class="example-box"><b>Chinna summary:</b> Un private IP (192.168.1.5 mathiri) yaaravadhu kitta sonna, adhu ore oru information mattum than — adhai vechi mattum yaarum un system-ah "hack" panna mudiyaathu. Real security depend aaguthu firewall, strong passwords, updated software, and public-facing services correct-a secure pannirukkiya nu.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 230">
+          <rect class="dbox" x="8" y="10" width="80" height="34" rx="8"/>
+          <text class="dtext" x="16" y="31" font-size="9">Phone</text>
+          <text class="dtext" x="16" y="42" font-size="8" fill="#ffb238">192.168.1.5</text>
+          <rect class="dbox" x="8" y="90" width="80" height="34" rx="8"/>
+          <text class="dtext" x="16" y="111" font-size="9">Laptop</text>
+          <text class="dtext" x="16" y="122" font-size="8" fill="#ffb238">192.168.1.6</text>
+          <rect class="dbox" x="8" y="170" width="80" height="34" rx="8"/>
+          <text class="dtext" x="16" y="191" font-size="9">Smart TV</text>
+          <text class="dtext" x="16" y="202" font-size="8" fill="#ffb238">192.168.1.7</text>
+
+          <rect class="dbox" x="128" y="90" width="80" height="44" rx="8" stroke="#3ddc97"/>
+          <text class="dtext-strong" x="150" y="112" font-size="10">Router</text>
+          <text class="dtext" x="138" y="126" font-size="8" fill="#3ddc97">NAT</text>
+
+          <path class="darrow" stroke="#ffb238" d="M90,27 L126,105" marker-end="url(#pp1)"/>
+          <path class="darrow" stroke="#ffb238" d="M90,107 L126,110" marker-end="url(#pp2)"/>
+          <path class="darrow" stroke="#ffb238" d="M90,187 L126,118" marker-end="url(#pp3)"/>
+
+          <rect class="dbox" x="230" y="90" width="62" height="44" rx="8" stroke="#4da3ff"/>
+          <text class="dtext" x="236" y="108" font-size="8">Public IP</text>
+          <text class="dtext" x="236" y="121" font-size="8" fill="#4da3ff">49.207.x.x</text>
+          <path class="darrow" stroke="#4da3ff" d="M210,112 L228,112" marker-end="url(#pp4)"/>
+          <text class="dtext" x="150" y="160" fill="#8a94a3" font-size="9">↓ Internet ↓</text>
+          <defs>
+            <marker id="pp1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="pp2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="pp3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="pp4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">MANY PRIVATE IPs → ONE PUBLIC IP (VIA NAT)</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== UDP ===================== -->
+  <article class="proto" id="udp" style="--accent:#ff4d5e">
+    <div class="proto-head">
+      <span class="proto-port">TRANSPORT LAYER</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">UDP</div>
+        <div class="proto-full">User Datagram Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>UDP TCP oda opposite mathiri — <b>connectionless</b>, handshake edhume panna maatanga, straight ah data anupputtu iruppanga. Speed than mukkiyam, konjam packet miss aanalum problem illa.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Handshake illame directly data packets (datagrams) anuppuranga.</li>
+          <li>Delivery guarantee illa — packet lost aana, marupadiyum anuppa maatanga.</li>
+          <li>Idhunala TCP ah vida <b>rendu, moondru madangu fast</b> ah irukkum.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Video call la (Zoom, Google Meet) oru frame miss aanalum paravaayillai, delay aagakoodathu — adhunala video/voice calls, online gaming, live streaming ellam UDP than use pannum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 160">
+          <rect class="dbox" x="10" y="60" width="80" height="40" rx="8"/>
+          <text class="dtext-strong" x="26" y="84">Client</text>
+          <rect class="dbox" x="210" y="60" width="80" height="40" rx="8"/>
+          <text class="dtext-strong" x="228" y="84">Server</text>
+          <path class="darrow" stroke="#ff4d5e" d="M92,72 L208,72" marker-end="url(#u1)"/>
+          <path class="darrow" stroke="#ff4d5e" d="M92,88 L208,88" marker-end="url(#u2)" stroke-dasharray="3 3"/>
+          <text class="dtext" x="98" y="65" fill="#ff4d5e">No handshake, just send!</text>
+          <defs>
+            <marker id="u1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="u2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">FAST, NO GUARANTEE</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== DNS ===================== -->
+  <article class="proto" id="dns" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">PORT 53</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">DNS</div>
+        <div class="proto-full">Domain Name System</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Computers ku domain names (google.com) puriyathu, IP address than puriyum. DNS oru <b>"phonebook"</b> mathiri — domain name kudutha, correspond aagira IP address ah kodukkum.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Nee browser la "google.com" type panna, indha name ku IP address theriyathu.</li>
+          <li>Browser oru <b>DNS resolver</b> kitta kekkum "google.com oda IP enna?" nu.</li>
+          <li>Resolver, Root DNS → TLD (.com) server → Authoritative server nu step by step lookup pannum.</li>
+          <li>IP address kidaichathum (eg: 142.250.183.14), browser andha IP kitta connect aagum.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Phone la contact name click panna number dial aaguthu illa? DNS um adhe maadhiri than — name type panna, andha peruku pinnadi irukura "number" (IP) ah find pannikum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <rect class="dbox" x="8" y="80" width="66" height="40" rx="8"/>
+          <text class="dtext" x="14" y="103" font-size="9">Browser</text>
+          <rect class="dbox" x="112" y="80" width="76" height="40" rx="8"/>
+          <text class="dtext" x="120" y="103" font-size="9">DNS Server</text>
+          <rect class="dbox" x="226" y="80" width="66" height="40" rx="8"/>
+          <text class="dtext" x="235" y="103" font-size="9">Website</text>
+          <path class="darrow" stroke="#4da3ff" d="M76,90 L110,90" marker-end="url(#d1)"/>
+          <text class="dtext" x="70" y="82" font-size="9">google.com?</text>
+          <path class="darrow" stroke="#3ddc97" d="M110,110 L76,110" marker-end="url(#d2)"/>
+          <text class="dtext" x="72" y="128" font-size="9">142.250.x.x</text>
+          <path class="darrow" stroke="#ffb238" d="M188,100 L224,100" marker-end="url(#d3)"/>
+          <defs>
+            <marker id="d1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker>
+            <marker id="d2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="d3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">NAME → LOOKUP → IP → SITE</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== DNSSEC ===================== -->
+  <article class="proto" id="dnssec" style="--accent:#ff4d5e">
+    <div class="proto-head">
+      <span class="proto-port">DNS SECURITY EXTENSION</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">DNSSEC</div>
+        <div class="proto-full">Domain Name System Security Extensions</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>Sonna maadhiri DNS oru "phonebook" — aana problem enna na, normal DNS-la, response fake-a irundhalum browser-ku theriyaathu! Yaaravadhu attacker fake DNS response anuppi, un "bank.com" ah wrong IP-ku redirect panniralam (idhai <b>DNS spoofing / cache poisoning</b> nu solvom). <b>DNSSEC</b> idha thadukka vandha security layer — DNS records-ku <b>digital signature</b> add pannuthu, so response genuine-a nu verify panna mudiyum.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Domain owner, DNS records-ah <b>private key</b> vechi cryptographically sign pannuvaanga.</li>
+          <li>Resolver DNS response vaangumbodhu, andha signature-ah <b>public key</b> vechi verify pannum.</li>
+          <li>Signature match aana mattum than resolver andha response-ah trust pannum — illena, "invalid, reject pannu" nu drop pannidum.</li>
+          <li>Idhu oru <b>chain of trust</b> — Root DNS → .com (TLD) → domain, ovvoru level-layum sign pannirukum, so end-to-end verify aagum.</li>
+        </ol>
+        <h4>Real World</h4>
+        <p>DNSSEC illaama, public WiFi-la irukkura attacker, un DNS request-ah intercept panni fake IP kudukka try pannalam (Man-in-the-Middle attack). DNSSEC irundha, andha fake response signature match aagaathu, browser andha response-ah reject pannidum. Banks, government sites (.gov), and major domains ellam DNSSEC use pannuvaanga extra protection-ku.</p>
+        <div class="example-box"><b>Note:</b> DNSSEC data-ah <i>encrypt</i> pannaadhu (adhu TLS oda vela) — adhu response <i>genuine-a irundhaal</i> mattum <i>verify</i> pannum. Rendu-layum sernthu use panna sollradhu than best practice.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <rect class="dbox" x="8" y="20" width="70" height="34" rx="8"/>
+          <text class="dtext" x="16" y="41" font-size="9">Resolver</text>
+          <rect class="dbox" x="115" y="20" width="80" height="34" rx="8"/>
+          <text class="dtext" x="122" y="41" font-size="9">DNS + Signature</text>
+          <path class="darrow" stroke="#ff4d5e" d="M80,37 L113,37" marker-end="url(#ds1)"/>
+          <rect x="8" y="90" width="187" height="40" rx="8" fill="none" stroke="#3ddc97" stroke-width="1.6"/>
+          <text class="dtext" x="18" y="106" fill="#3ddc97" font-size="9">✓ Signature valid → Trust response</text>
+          <text class="dtext" x="18" y="120" font-size="8">verified using public key</text>
+          <rect x="8" y="145" width="187" height="40" rx="8" fill="none" stroke="#ff4d5e" stroke-width="1.6" stroke-dasharray="3 3"/>
+          <text class="dtext" x="18" y="161" fill="#ff4d5e" font-size="9">✗ Signature invalid → Reject/drop</text>
+          <text class="dtext" x="18" y="175" font-size="8">possible spoofed response</text>
+          <defs><marker id="ds1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker></defs>
+        </svg>
+        <div class="diagram-caption">SIGNED DNS RESPONSE → VERIFY → TRUST OR REJECT</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== DHCP ===================== -->
+  <article class="proto" id="dhcp" style="--accent:#3ddc97">
+    <div class="proto-head">
+      <span class="proto-port">PORT 67 / 68</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">DHCP</div>
+        <div class="proto-full">Dynamic Host Configuration Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Nee WiFi connect pannumbothu, manual ah IP address type panna maattiye — automatic ah kidaikkum illa? Adhu DHCP than pannuthu. Network ku oru device connect aagumbothu, automatic ah IP address assign pannurathu DHCP oda vela.</p>
+        <h4>Eppadi Work Aagum — DORA Process</h4>
+        <ol>
+          <li><b>Discover:</b> Device network ku "IP address venum" nu broadcast pannum.</li>
+          <li><b>Offer:</b> DHCP server (usually router) "idhu IP address eduthuko" nu offer pannum.</li>
+          <li><b>Request:</b> Device andha IP ah "sari, idha use panren" nu request pannum.</li>
+          <li><b>Acknowledge:</b> Server confirm pannum — ippo device ku andha IP official ah assign aayiduchu.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Coffee shop la free WiFi connect panna, thani ah IP address type panna theva illa — DHCP background la automatic ah handle pannikkum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 220">
+          <rect class="dbox" x="10" y="20" width="80" height="40" rx="8"/>
+          <text class="dtext" x="20" y="44" font-size="10">Device</text>
+          <rect class="dbox" x="210" y="20" width="80" height="40" rx="8"/>
+          <text class="dtext" x="215" y="44" font-size="10">DHCP Srv</text>
+          <path class="darrow" stroke="#3ddc97" d="M92,42 L208,60" marker-end="url(#e1)"/>
+          <text class="dtext" x="95" y="55" font-size="9">Discover</text>
+          <path class="darrow" stroke="#4da3ff" d="M208,85 L92,70" marker-end="url(#e2)"/>
+          <text class="dtext" x="95" y="90" font-size="9">Offer</text>
+          <path class="darrow" stroke="#ffb238" d="M92,105 L208,120" marker-end="url(#e3)"/>
+          <text class="dtext" x="95" y="118" font-size="9">Request</text>
+          <path class="darrow" stroke="#ff4d5e" d="M208,145 L92,130" marker-end="url(#e4)"/>
+          <text class="dtext" x="95" y="150" font-size="9">Acknowledge</text>
+          <defs>
+            <marker id="e1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="e2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker>
+            <marker id="e3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="e4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">D-O-R-A: DISCOVER → OFFER → REQUEST → ACK</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== WEBSOCKET ===================== -->
+  <article class="proto" id="websocket" style="--accent:#ffb238">
+    <div class="proto-head">
+      <span class="proto-port">PORT 80/443 (UPGRADED)</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">WebSocket</div>
+        <div class="proto-full">Full-Duplex Communication Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>HTTP la request-response maadhiri ovvoru time-um pudhusa connection thevai — WebSocket la oru <b>persistent (open) connection</b> create pannikittu, adhula rendu side um eppo venumna data anuppalaam. Idhu "real-time two-way" communication.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Client HTTP request anuppi, "WebSocket ku upgrade pannunga" nu kekkum.</li>
+          <li>Server agree panna, connection <b>HTTP-la irundhu WebSocket-ku upgrade</b> aagum.</li>
+          <li>Ippo connection open ah irukum — client and server, evolvaru venumna data anuppalaam, request panna theva illa.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> WhatsApp Web la message vandha udane kaanum illa? Andha real-time update WebSocket than. Stock price live update, chat apps, multiplayer games ellam idha use pannum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 160">
+          <rect class="dbox" x="10" y="60" width="80" height="40" rx="8"/>
+          <text class="dtext" x="24" y="84" font-size="10">Client</text>
+          <rect class="dbox" x="210" y="60" width="80" height="40" rx="8"/>
+          <text class="dtext" x="224" y="84" font-size="10">Server</text>
+          <rect x="95" y="65" width="110" height="30" rx="15" fill="none" stroke="#ffb238" stroke-width="1.6"/>
+          <text class="dtext" x="105" y="85" fill="#ffb238" font-size="10">Always Open ↔</text>
+        </svg>
+        <div class="diagram-caption">ONE CONNECTION — DATA BOTH WAYS, ANYTIME</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== SSH ===================== -->
+  <article class="proto" id="ssh" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">PORT 22</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">SSH</div>
+        <div class="proto-full">Secure Shell</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Oru remote server ah <b>secure ah, encrypted ah</b> access pannurathukku use pannura protocol. Developers, system admins, server ah terminal moolam control pannuvaanga — password illama koodathaan key-based login pannalaam.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Client <code style="font-family:var(--mono)">ssh user@server-ip</code> nu command run pannum.</li>
+          <li>Server and client key exchange panni encrypted channel create pannuvaanga.</li>
+          <li>Authenticate aana pinnadi (password / SSH key), client ku server oda terminal access kidaikkum.</li>
+          <li>Ippo remote server la commands run pannalaam — files edit pannalaam, apps restart pannalaam, ellam terminal-la irundhe.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Oru developer, AWS la irukura server ah manage panna, thanoda laptop-la irundhe SSH moolam connect aaguvaan — physically server room ku pova theva illa.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 160">
+          <rect class="dbox" x="10" y="60" width="80" height="40" rx="8"/>
+          <text class="dtext" x="24" y="84" font-size="10">Laptop</text>
+          <rect class="dbox" x="210" y="60" width="80" height="40" rx="8"/>
+          <text class="dtext" x="218" y="84" font-size="9">Remote Srv</text>
+          <path class="darrow" stroke="#4da3ff" d="M92,80 L208,80" marker-end="url(#sh1)"/>
+          <text class="dtext" x="105" y="72" fill="#4da3ff">🔒 encrypted terminal</text>
+          <defs><marker id="sh1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker></defs>
+        </svg>
+        <div class="diagram-caption">REMOTE CONTROL, FULLY ENCRYPTED</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== SNMP ===================== -->
+  <article class="proto" id="snmp" style="--accent:#ff4d5e">
+    <div class="proto-head">
+      <span class="proto-port">PORT 161</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">SNMP</div>
+        <div class="proto-full">Simple Network Management Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Network devices — routers, switches, printers, servers — ellame oru periya company office la irukkum. Ivangala <b>monitor pannurathukkum, manage pannurathukkum</b> use pannura protocol than SNMP. IT admins indha data vachu network health check pannuvaanga.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Ovvoru device-lum oru small software (<b>SNMP Agent</b>) run aagum — CPU usage, temperature, traffic data collect pannum.</li>
+          <li>Central <b>SNMP Manager</b> (monitoring software), ella agent kittayum data ah poll pannum (kettu vaanguvaan).</li>
+          <li>Edhavadhu device problem irundha (server down, high traffic), agent automatic ah manager ku alert (<b>trap</b>) anuppum.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Company IT team dashboard la ella router/server status um kaanum (green/red indicators) — adhu SNMP data than kaatuthu.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 190">
+          <rect class="dbox" x="110" y="15" width="90" height="40" rx="8"/>
+          <text class="dtext" x="118" y="39" font-size="9">SNMP Manager</text>
+          <rect class="dbox" x="10" y="120" width="70" height="36" rx="8"/>
+          <text class="dtext" x="20" y="142" font-size="9">Router</text>
+          <rect class="dbox" x="115" y="120" width="70" height="36" rx="8"/>
+          <text class="dtext" x="125" y="142" font-size="9">Switch</text>
+          <rect class="dbox" x="220" y="120" width="70" height="36" rx="8"/>
+          <text class="dtext" x="225" y="142" font-size="9">Server</text>
+          <path class="darrow" stroke="#ff4d5e" d="M140,55 L55,118" marker-end="url(#sn1)"/>
+          <path class="darrow" stroke="#ff4d5e" d="M155,55 L155,118" marker-end="url(#sn2)"/>
+          <path class="darrow" stroke="#ff4d5e" d="M170,55 L255,118" marker-end="url(#sn3)"/>
+          <defs>
+            <marker id="sn1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="sn2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="sn3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">ONE MANAGER MONITORS MANY DEVICES</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== IMAP ===================== -->
+  <article class="proto" id="imap" style="--accent:#3ddc97">
+    <div class="proto-head">
+      <span class="proto-port">PORT 143 / 993</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">IMAP</div>
+        <div class="proto-full">Internet Message Access Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu</h4>
+        <p>Email client (Gmail app, Outlook) email server-la irundhu emails ah fetch pannurathukku use pannura protocol. IMAP oda specialty enna na, emails <b>server-leye stay pannum</b> — client veru devices koodathaan same emails sync aagi kaanum.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Email client server kitta connect aagum, login pannum.</li>
+          <li>Emails server-la irundhe directly read pannum — download panni delete pannaadhu (POP3 maadhiri illai).</li>
+          <li>Nee phone-la email delete panna, laptop-lum automatic ah delete aagum — enna na ella devices um same server data ah than sync aaguthu.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Gmail-ah phone-lum laptop-lum open panna, rendu place-lum same emails, same read/unread status kaanum illa? Adhu than IMAP oda magic.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 190">
+          <rect class="dbox" x="120" y="15" width="80" height="40" rx="8"/>
+          <text class="dtext" x="135" y="39" font-size="9">Mail Server</text>
+          <rect class="dbox" x="10" y="120" width="70" height="36" rx="8"/>
+          <text class="dtext" x="22" y="142" font-size="9">Phone</text>
+          <rect class="dbox" x="230" y="120" width="70" height="36" rx="8"/>
+          <text class="dtext" x="240" y="142" font-size="9">Laptop</text>
+          <path class="darrow" stroke="#3ddc97" d="M130,55 L60,118" marker-end="url(#im1)"/>
+          <path class="darrow" stroke="#3ddc97" d="M190,55 L260,118" marker-end="url(#im2)"/>
+          <text class="dtext" x="95" y="88" fill="#3ddc97" font-size="9">synced</text>
+          <defs>
+            <marker id="im1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="im2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">SAME MAILBOX, ALL DEVICES SYNCED</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== REST API ===================== -->
+  <article class="proto" id="restapi" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">BUILT ON TOP OF HTTP</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">REST API</div>
+        <div class="proto-full">Representational State Transfer</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>REST oru <b>protocol illai</b> — idhu oru <b>architecture style / set of rules</b>, HTTP protocol-ku mele build pannirukira convention. "Resources" (data — users, products, orders) ah <b>URLs</b> moolam identify pannurom, and standard <b>HTTP methods</b> vechi andha resources-la operations pannurom.</p>
+        <table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:.88rem;">
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; font-family:var(--mono); color:var(--cyan);">GET</td><td style="padding:6px 4px;">Data <b>read</b> panna (fetch)</td></tr>
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; font-family:var(--mono); color:var(--cyan);">POST</td><td style="padding:6px 4px;">Puthu data <b>create</b> panna</td></tr>
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; font-family:var(--mono); color:var(--cyan);">PUT/PATCH</td><td style="padding:6px 4px;">Irukkura data <b>update</b> panna</td></tr>
+          <tr><td style="padding:6px 4px; font-family:var(--mono); color:var(--cyan);">DELETE</td><td style="padding:6px 4px;">Data <b>delete</b> panna</td></tr>
+        </table>
+
+        <h4>"REST API Everywhere Pass Aaguthu" — Ipdi Solraanga, En?</h4>
+        <p>Idhu than key point: REST enn'na oru <b>programming language-oda alla, HTTP protocol-oda</b> attached. HTTP ellaa OS, browser, mobile app, server language-layum universal-a support pannum. Adhunala:</p>
+        <ol>
+          <li><b>Django (REST Framework), FastAPI, Node/Express, Spring Boot</b> — ivanga ella backend-um <b>ultimate-a oru HTTP server</b> than run pannuvaanga. Internal code Python-a, JavaScript-a, Java-va irundhalum, <b>over-the-network level-la</b> ellame same — HTTP request vandhu, HTTP response poguthu.</li>
+          <li>Client (browser, mobile app, Postman, veru server) — backend Django-va, FastAPI-va nu <b>kavalaippadaadhu</b>. Adhukku theriyanum na "correct URL-ku correct HTTP method-la request anuppuna, JSON response kidaikkum" nu than.</li>
+          <li>Idhuna, "contract" (agreement) HTTP request/response format-la than irukku — <b>language-la illai</b>. Adhunaala FastAPI-la build pannina REST API-ah, React app-um, Android app-um, Django app-um — ellame same-a call panna mudiyum.</li>
+          <li>Django REST Framework — Django-la REST APIs easy-a build panna oru library. FastAPI — Python-la vega (fast) REST APIs build panna modern framework, automatic docs/validation kudukkum. Rendum ultimate-a same HTTP rules-ah than follow pannuvaanga — implementation style mattum vera.</li>
+        </ol>
+
+        <h4>Real World Example</h4>
+        <p>Un banking app la balance check pannumbodhu, app <code style="font-family:var(--mono)">GET /api/accounts/123/balance</code> nu request anuppum. Backend Django-va, FastAPI-va irundhalum — response <b>same JSON format</b>-la than varum: <code style="font-family:var(--mono)">{"balance": 45000}</code>. Adhunala frontend team backend language maathinaalum, app-la edhume maathanum theva illa.</p>
+        <div class="example-box"><b>Key Takeaway:</b> REST API "everywhere pass aaguthu" enna, adhu HTTP-oda universal nature-ah use pannuthu — DNS, TCP, IP ellam already universal-a work pannura maadhiri, REST-um andha same HTTP foundation mele than nikkuthu. Django-um FastAPI-um "language" mattum vera, "protocol" same.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 240">
+          <rect class="dbox" x="8" y="10" width="80" height="34" rx="8"/>
+          <text class="dtext" x="18" y="31" font-size="9">Mobile App</text>
+          <rect class="dbox" x="8" y="60" width="80" height="34" rx="8"/>
+          <text class="dtext" x="24" y="81" font-size="9">Browser</text>
+          <rect class="dbox" x="8" y="110" width="80" height="34" rx="8"/>
+          <text class="dtext" x="20" y="131" font-size="9">Postman</text>
+
+          <rect class="dbox" x="130" y="55" width="90" height="44" rx="8" stroke="#4da3ff"/>
+          <text class="dtext-strong" x="140" y="75" font-size="9">REST API</text>
+          <text class="dtext" x="140" y="89" font-size="8">Django / FastAPI</text>
+
+          <path class="darrow" stroke="#4da3ff" d="M90,27 L128,65" marker-end="url(#r1)"/>
+          <path class="darrow" stroke="#4da3ff" d="M90,77 L128,77" marker-end="url(#r2)"/>
+          <path class="darrow" stroke="#4da3ff" d="M90,127 L128,90" marker-end="url(#r3)"/>
+          <text class="dtext" x="90" y="45" font-size="8" fill="#4da3ff">HTTP: GET/POST/PUT/DELETE</text>
+
+          <rect class="dbox" x="230" y="55" width="60" height="44" rx="8"/>
+          <text class="dtext" x="240" y="80" font-size="9">Database</text>
+          <path class="darrow" stroke="#3ddc97" d="M222,77 L228,77" marker-end="url(#r4)"/>
+
+          <text class="dtext" x="130" y="130" fill="#3ddc97" font-size="9">Response: JSON</text>
+          <text class="dtext" x="130" y="144" font-size="8">{"balance": 45000}</text>
+
+          <text class="dtext" x="20" y="175" fill="#8a94a3" font-size="9">Client doesn't care which</text>
+          <text class="dtext" x="20" y="188" fill="#8a94a3" font-size="9">framework runs behind —</text>
+          <text class="dtext" x="20" y="201" fill="#8a94a3" font-size="9">HTTP contract is the same.</text>
+          <defs>
+            <marker id="r1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker>
+            <marker id="r2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker>
+            <marker id="r3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4da3ff"/></marker>
+            <marker id="r4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">ANY CLIENT → SAME HTTP CONTRACT → ANY BACKEND</div>
+      </div>
+    </div>
+  </article>
+
+</main>
+
+<!-- ============ WEBSITE SECURITY ============ -->
+<section class="security" id="security">
+  <div class="security-inner">
+    <div class="security-head">
+      <span class="eyebrow" style="margin-bottom:16px;">Defense Guide</span>
+      <h2>Website-ah Attackers Kitta Irundhu Eppadi Protect Pannurathu</h2>
+      <p>Ippo namba paatha ella protocol/API knowledge-um use panni, real attacks-ah eppadi thadukkanum nu paakalam — Phishing, Brute Force, and Penetration Testing (idha epdi use pannanum) moondrayum detail-a paakalam.</p>
+    </div>
+
+    <div class="attack-grid">
+      <div class="attack-card" style="--ac:#ff4d5e">
+        <span class="a-eyebrow">Social Engineering Attack</span>
+        <h3>Phishing</h3>
+        <p>Attacker fake email/website vechi, real company mathiri nadichi, un password/card details-ah steal panna try pannuvaan (eg: fake "bank.com" login page).</p>
+        <ul>
+          <li><b>DMARC / SPF / DKIM</b> — un domain-oda email authentication set pannunga, spoofed emails block aagum.</li>
+          <li><b>HTTPS + valid certificate</b> — users padlock icon paathu verify pannikkalam.</li>
+          <li><b>MFA / 2FA</b> compulsory pannunga — password mattum theriyunda login aagaathu.</li>
+          <li>Lookalike domains (eg: bankk.com) monitor pannunga — brand protection tools use pannalam.</li>
+          <li>Employees/users-ku phishing awareness training kudunga — click pannuradhukku munnadi verify panna sollunga.</li>
+        </ul>
+      </div>
+
+      <div class="attack-card" style="--ac:#ffb238">
+        <span class="a-eyebrow">Credential Attack</span>
+        <h3>Brute Force</h3>
+        <p>Attacker automated tool vechi, login page-la thousands of password combinations try pannuvaan — correct password kidaikkum varaikkum guess pannuvaan.</p>
+        <ul>
+          <li><b>Rate limiting</b> — oru IP-la irundhu, oru time-ku eththana login attempts nu limit pannunga.</li>
+          <li><b>Account lockout</b> — 5-6 wrong attempts-ku apparam account temporary-a lock pannunga.</li>
+          <li><b>CAPTCHA</b> add pannunga — bots-ah block pannurathukku.</li>
+          <li><b>Strong password policy + MFA</b> — password guess pannalum, second factor illama login aagaathu.</li>
+          <li><b>WAF (Web Application Firewall)</b> use pannunga — suspicious traffic pattern automatic-a block aagum.</li>
+        </ul>
+      </div>
+
+      <div class="attack-card" style="--ac:#3ddc97">
+        <span class="a-eyebrow">Proactive Defense</span>
+        <h3>Penetration Testing</h3>
+        <p>Idhu <b>authorized, controlled</b> attack — un own security team (or hired experts) real hacker mathiri, un website-ah test panni, vulnerabilities-ah real attacker kandupidikkura munnadi kandupidipparanga.</p>
+        <ul>
+          <li>Idha <b>legal permission</b> vechi mattum pannanum — un own site-la mattum, illena unauthorized-a vera edhavadhu system-la panna <b>illegal</b>.</li>
+          <li>Industry standard: <b>OWASP Top 10</b> vulnerabilities check pannuvaanga (SQL injection, XSS, broken auth, etc).</li>
+          <li>Regular ah (eg: every 6 months) pannunga — puthu vulnerabilities discover aagiyeye irukum.</li>
+          <li>Report-la kidaikkura issues-ah fix panni, marupadiyum test pannunga (re-test).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pentest-flow">
+      <div class="pentest-step"><span class="ps-num">STEP 1</span><div class="ps-title">Reconnaissance</div><div class="ps-desc">Target-oda public info collect pannurathu</div></div>
+      <div class="pentest-arrow">→</div>
+      <div class="pentest-step"><span class="ps-num">STEP 2</span><div class="ps-title">Scanning</div><div class="ps-desc">Open ports, services, weaknesses find pannurathu</div></div>
+      <div class="pentest-arrow">→</div>
+      <div class="pentest-step"><span class="ps-num">STEP 3</span><div class="ps-title">Controlled Test</div><div class="ps-desc">Authorized-a vulnerabilities verify pannurathu</div></div>
+      <div class="pentest-arrow">→</div>
+      <div class="pentest-step"><span class="ps-num">STEP 4</span><div class="ps-title">Reporting</div><div class="ps-desc">Findings document panni team-ku kudukkurathu</div></div>
+      <div class="pentest-arrow">→</div>
+      <div class="pentest-step"><span class="ps-num">STEP 5</span><div class="ps-title">Fix & Re-test</div><div class="ps-desc">Issues patch panni, marupadiyum verify pannurathu</div></div>
+    </div>
+
+    <div class="checklist-wrap">
+      <h3>General Website Security Checklist</h3>
+      <div class="checklist-grid">
+        <div class="check-item"><span class="ci-mark">✓</span><div class="ci-text"><b>HTTPS/TLS Everywhere</b><span>Every page encrypted-a irukkanum, mixed content illama</span></div></div>
+        <div class="check-item"><span class="ci-mark">✓</span><div class="ci-text"><b>Security Headers</b><span>CSP, X-Frame-Options, HSTS set pannunga</span></div></div>
+        <div class="check-item"><span class="ci-mark">✓</span><div class="ci-text"><b>Input Validation</b><span>SQL Injection, XSS thadukka user input sanitize pannunga</span></div></div>
+        <div class="check-item"><span class="ci-mark">✓</span><div class="ci-text"><b>Keep Software Updated</b><span>Framework, libraries, plugins latest version-la vaikkunga</span></div></div>
+        <div class="check-item"><span class="ci-mark">✓</span><div class="ci-text"><b>Least Privilege Access</b><span>Ovvoru user/service-kum required access mattum kudunga</span></div></div>
+        <div class="check-item"><span class="ci-mark">✓</span><div class="ci-text"><b>Regular Backups</b><span>Attack aana kooda data recover panna mudiyanum</span></div></div>
+        <div class="check-item"><span class="ci-mark">✓</span><div class="ci-text"><b>Logging & Monitoring</b><span>Suspicious activity real-time-la kandupidikkanum</span></div></div>
+        <div class="check-item"><span class="ci-mark">✓</span><div class="ci-text"><b>DDoS Protection</b><span>Cloudflare/WAF mathiri service vechi traffic filter pannunga</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SITE LOAD FLOW TREE ============ -->
+<section class="siteflow" id="siteflow">
+  <div class="siteflow-inner">
+    <span class="eyebrow" style="margin-bottom:16px;">The Full Journey</span>
+    <h2 class="siteflow-title">Website Load Pannumbodhu Enna Nadakkuthu?</h2>
+    <p class="siteflow-sub">Browser-la URL type panni Enter adichathum, screen-la page kaanura varaikkum nadakkura ella step-um — HTTP um HTTPS um side-by-side compare panni paakalam.</p>
+
+    <div class="flow-cols">
+      <!-- HTTP column -->
+      <div class="flow-col" style="--fc:#4da3ff">
+        <div class="flow-col-head">HTTP — http://example.com</div>
+        <ol class="flow-steps">
+          <li><span class="fn">1</span><div><b>URL type pannurathu</b><br>Browser address bar-la domain type panni Enter.</div></li>
+          <li><span class="fn">2</span><div><b>Browser cache check</b><br>Munnadi indha domain-oda IP theriyuma nu local cache paakkum.</div></li>
+          <li><span class="fn">3</span><div><b>DNS Lookup</b><br>Cache-la illena, DNS resolver kitta domain → IP address kekkum.</div></li>
+          <li><span class="fn">4</span><div><b>TCP 3-Way Handshake</b><br>Browser & server SYN → SYN-ACK → ACK panni connection open pannuvaanga.</div></li>
+          <li><span class="fn">5</span><div><b>HTTP GET Request</b><br>Browser plain-text-la "GET /index.html" request anuppum.</div></li>
+          <li><span class="fn">6</span><div><b>Server Response</b><br>Server HTML/CSS/JS anuppum — <b>encryption illama, plain text-la</b>.</div></li>
+          <li><span class="fn">7</span><div><b>Browser Render</b><br>HTML parse pannitu, CSS apply pannitu, JS run panni page kaatum.</div></li>
+        </ol>
+        <div class="flow-risk">⚠️ Data plain text-la poguthu — WiFi/network-la yaaravadhu traffic ah "sniff" pannalam, password/data padikkalam.</div>
+      </div>
+
+      <!-- HTTPS column -->
+      <div class="flow-col" style="--fc:#3ddc97">
+        <div class="flow-col-head">HTTPS — https://example.com</div>
+        <ol class="flow-steps">
+          <li><span class="fn">1</span><div><b>URL type pannurathu</b><br>Browser address bar-la domain type panni Enter.</div></li>
+          <li><span class="fn">2</span><div><b>Browser cache check</b><br>Munnadi indha domain-oda IP theriyuma nu local cache paakkum.</div></li>
+          <li><span class="fn">3</span><div><b>DNS Lookup (+ DNSSEC verify)</b><br>DNS resolver domain → IP kudukkum; DNSSEC irundha signature-um verify aagum.</div></li>
+          <li><span class="fn">4</span><div><b>TCP 3-Way Handshake</b><br>SYN → SYN-ACK → ACK — same as HTTP, connection open aagum.</div></li>
+          <li><span class="fn">5</span><div><b>TLS Handshake</b><br>Client Hello → Server Hello + Certificate → Key Exchange → Encrypted session start.</div></li>
+          <li><span class="fn">6</span><div><b>Encrypted HTTP Request/Response</b><br>Ippo GET request um, HTML response-um <b>fully encrypted</b>-a poi varum.</div></li>
+          <li><span class="fn">7</span><div><b>Browser Render + 🔒 Padlock</b><br>Page decrypt panni render aagum, address bar-la padlock icon kaanum.</div></li>
+        </ol>
+        <div class="flow-risk" style="border-color:#3ddc97; color:#3ddc97;">✅ Data encrypted-a poguthu — middle-la yaaravadhu traffic paathalum, scrambled text mattum than kaanum.</div>
+      </div>
+    </div>
+
+    <div class="flow-note">
+      <b>Extra Note:</b> Website-oda backend-la REST API irundha (eg: product list, login), step 6/7-ku munnadi browser andha REST API-ku (Django/FastAPI/Node — edhu venaalum) separate HTTP/HTTPS requests anuppi, JSON data vaangi, page-la dynamic-a kaattum (eg: React/Vue apps ipdi than work aagum).
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Idhu oda ella protocol um sernthu than internet ah run pannuthu — HTTP/HTTPS webpages ku, TCP/UDP data delivery ku, IP addressing ku, DNS naming ku, TLS security ku, DHCP auto-config ku, WebSocket/SSH/SNMP/IMAP/FTP specific tasks ku. Ellame puriyudha? Great — ippo nee network protocols la expert!</p>
+  <div class="sig">// built for clarity — Tanlish networking guide</div>
+</footer>
+
+<script>
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('.proto, #siteflow, #security');
+  const navLinks = document.querySelectorAll('.nav-pill');
+  const map = {};
+  navLinks.forEach(l => map[l.getAttribute('href').slice(1)] = l);
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.id;
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        if (map[id]) {
+          map[id].classList.add('active');
+          map[id].scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+        }
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Scroll progress bar + back-to-top button — genZ UI touch
+  const progressBar = document.getElementById('progressBar');
+  const backToTop = document.getElementById('backToTop');
+  function onScroll(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+    backToTop.classList.toggle('show', scrollTop > 600);
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+</script>
+</body>
+</html>
