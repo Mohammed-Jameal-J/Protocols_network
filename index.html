@@ -398,6 +398,31 @@
   .check-item .ci-text b{ display:block; font-size:.9rem; margin-bottom:2px; }
   .check-item .ci-text span{ font-size:.8rem; color:var(--text-dim); }
 
+  /* ===== OSI MODEL ===== */
+  .osi-section{
+    max-width:820px; margin:70px auto 10px; padding:0 20px; text-align:center;
+  }
+  .osi-title{
+    font-family:var(--disp); text-transform:uppercase; font-size:clamp(1.5rem,4vw,2.2rem);
+    color:var(--amber); letter-spacing:-.01em; margin-bottom:14px;
+  }
+  .osi-sub{ color:var(--text-dim); max-width:640px; margin:0 auto 30px; }
+  .osi-stack{ display:flex; flex-direction:column; gap:6px; text-align:left; }
+  .osi-layer{
+    display:flex; align-items:center; gap:16px;
+    background:var(--bg-panel); border:1px solid var(--line);
+    border-left:4px solid var(--lc, var(--cyan));
+    border-radius:10px; padding:12px 18px;
+    transition:transform .2s;
+  }
+  .osi-layer:hover{ transform:translateX(6px); }
+  .osi-num{
+    font-family:var(--mono); font-size:1.1rem; font-weight:900; color:var(--lc, var(--cyan));
+    width:26px; text-align:center; flex:0 0 auto;
+  }
+  .osi-txt b{ display:block; font-size:.95rem; }
+  .osi-txt span{ font-size:.82rem; color:var(--text-dim); }
+
   footer{
     max-width:880px; margin:30px auto 90px; padding:0 20px;
     color:var(--text-dim); font-size:.9rem; text-align:center;
@@ -489,14 +514,24 @@
 <!-- ============ NAV ============ -->
 <nav class="nav-wrap">
   <div class="nav-scroll" id="navScroll">
+    <a class="nav-pill" href="#osi">OSI Model</a>
+    <a class="nav-pill" href="#nettopo">Topologies</a>
     <a class="nav-pill" href="#http">HTTP</a>
     <a class="nav-pill" href="#https">HTTPS</a>
     <a class="nav-pill" href="#ssltls">SSL/TLS</a>
     <a class="nav-pill" href="#ftp">FTP</a>
+    <a class="nav-pill" href="#macarp">MAC/ARP</a>
+    <a class="nav-pill" href="#portsocket">Ports/Sockets</a>
     <a class="nav-pill" href="#tcp">TCP</a>
     <a class="nav-pill" href="#ip">IP</a>
     <a class="nav-pill" href="#privpub">Private/Public IP</a>
+    <a class="nav-pill" href="#subnetting">Subnetting/CIDR</a>
+    <a class="nav-pill" href="#ipv4v6">IPv4 vs IPv6</a>
+    <a class="nav-pill" href="#natvlan">NAT/VLAN/Routing</a>
     <a class="nav-pill" href="#udp">UDP</a>
+    <a class="nav-pill" href="#ucast">Unicast/Multicast</a>
+    <a class="nav-pill" href="#mtu">MTU/Fragmentation</a>
+    <a class="nav-pill" href="#icmp">ICMP/Ping</a>
     <a class="nav-pill" href="#dns">DNS</a>
     <a class="nav-pill" href="#dnssec">DNSSEC</a>
     <a class="nav-pill" href="#dhcp">DHCP</a>
@@ -504,7 +539,13 @@
     <a class="nav-pill" href="#ssh">SSH</a>
     <a class="nav-pill" href="#snmp">SNMP</a>
     <a class="nav-pill" href="#imap">IMAP</a>
+    <a class="nav-pill" href="#firewallvpn">Firewall/VPN</a>
+    <a class="nav-pill" href="#proxy">Proxy</a>
+    <a class="nav-pill" href="#lbcdn">LB/CDN</a>
+    <a class="nav-pill" href="#bandwidth">Bandwidth/Latency</a>
     <a class="nav-pill" href="#restapi">REST API</a>
+    <a class="nav-pill" href="#apiauth">API Auth</a>
+    <a class="nav-pill" href="#zerotrust">Zero Trust</a>
     <a class="nav-pill" href="#security">Website Security</a>
     <a class="nav-pill" href="#siteflow">Site Load Flow</a>
   </div>
@@ -514,11 +555,116 @@
 <section class="intro">
   <h2>Enna Idhu Protocol Nu Sollradhu?</h2>
   <p>Protocol nu solra vaartha ellarukkum theriyara madhiri irukum, aana simple ah sonna: <b>oru "rule book"</b> — rendu computer/device pesikka (communicate panna) follow pannanum nu set pannina rules. Nee oru foreign country ku poitu andha country language pesama English la pesa mudiyathu, adha madhiri than computers kum oru common "language" venum — adhu than protocol.</p>
-  <p>Indha page la irukura 13 protocols ellame internet function aagurathukku backbone. Ovvondrayum <b>Tanlish la</b> — enna, eppadi work aagudhu, engeyellam real life la use aagudhu nu — full ah paakalam. Ready ah? Poyi paarpom!</p>
+  <p>Indha page la irukura 30+ topics — protocols, addressing concepts, security, performance — ellame internet function aagurathukku backbone. Ovvondrayum <b>Tanlish la</b> — enna, eppadi work aagudhu, engeyellam real life la use aagudhu nu — full ah paakalam. Ready ah? Poyi paarpom!</p>
 </section>
 
 <!-- ============ PROTOCOLS ============ -->
 <main class="protocols">
+  <!-- ===================== OSI 7-LAYER MODEL ===================== -->
+  <article class="proto" id="osi" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">CONCEPTUAL FRAMEWORK</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">OSI 7-Layer Model</div>
+        <div class="proto-full">Open Systems Interconnection</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>OSI Model oru <b>conceptual framework</b> — network communication-ah <b>7 layers</b>-a divide pannuthu, ovvoru layer-kum specific job irukku. Namba ippo varaikkum paartha ella protocol-um (HTTP, TCP, IP, MAC) — ellame indha 7 layers-la oru place-la than "fit" aagum.</p>
+        <h4>7 Layers — Bottom to Top</h4>
+        <ol>
+          <li><b>Layer 1 — Physical:</b> Actual cables, WiFi radio signals, electrical pulses. Data 0s and 1s-a travel pannurathu.</li>
+          <li><b>Layer 2 — Data Link:</b> MAC address use panni, same local network-la devices identify pannurathu (switches).</li>
+          <li><b>Layer 3 — Network:</b> IP address use panni, routing pannurathu (routers) — IP, ICMP idhu layer-la than.</li>
+          <li><b>Layer 4 — Transport:</b> TCP/UDP — reliable delivery, port numbers, data segments-a break pannurathu.</li>
+          <li><b>Layer 5 — Session:</b> Rendu device-oda connection/session-ah manage panni, open-a vachirukurathu.</li>
+          <li><b>Layer 6 — Presentation:</b> Data format, encryption/decryption (SSL/TLS idhu layer-la fit aagum), compression.</li>
+          <li><b>Layer 7 — Application:</b> User-facing protocols — HTTP, FTP, DNS, SSH, IMAP ellam idhu layer-la than.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Postal system mathiri nenachukonga — letter content (Application), envelope-la sealed/coded (Presentation), delivery tracking (Session), package split panni multiple trucks-la (Transport), address vachi route pannurathu (Network), local delivery van driver house find pannurathu (Data Link), actual road/vehicle (Physical).</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 260">
+          <g font-family="var(--mono)" font-size="9.5">
+            <rect class="dbox" x="10" y="6" width="280" height="30" rx="6"/>
+            <text class="dtext-strong" x="18" y="25">7. Application — HTTP, DNS, SSH</text>
+            <rect class="dbox" x="10" y="40" width="280" height="30" rx="6"/>
+            <text class="dtext-strong" x="18" y="59">6. Presentation — SSL/TLS, encryption</text>
+            <rect class="dbox" x="10" y="74" width="280" height="30" rx="6"/>
+            <text class="dtext-strong" x="18" y="93">5. Session — connection management</text>
+            <rect class="dbox" x="10" y="108" width="280" height="30" rx="6"/>
+            <text class="dtext-strong" x="18" y="127">4. Transport — TCP, UDP, ports</text>
+            <rect class="dbox" x="10" y="142" width="280" height="30" rx="6"/>
+            <text class="dtext-strong" x="18" y="161">3. Network — IP, ICMP, routing</text>
+            <rect class="dbox" x="10" y="176" width="280" height="30" rx="6"/>
+            <text class="dtext-strong" x="18" y="195">2. Data Link — MAC, ARP, switches</text>
+            <rect class="dbox" x="10" y="210" width="280" height="30" rx="6"/>
+            <text class="dtext-strong" x="18" y="229">1. Physical — cables, WiFi signals</text>
+          </g>
+        </svg>
+        <div class="diagram-caption">EVERY PROTOCOL WE COVERED FITS ONE OF THESE 7</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== NETWORK TOPOLOGIES ===================== -->
+  <article class="proto" id="nettopo" style="--accent:#3ddc97">
+    <div class="proto-head">
+      <span class="proto-port">PHYSICAL LAYOUT</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Network Topologies</div>
+        <div class="proto-full">Star, Bus, Ring, Mesh</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>Topology nu solradhu, devices ellam eppadi physically/logically arrange pannirukanga nu sollura layout. Idhu decide pannuthu network eppadi perform pannum, edhavadhu device fail aana enna aagum nu.</p>
+        <h4>Types</h4>
+        <ol>
+          <li><b>Star:</b> Ella devices um oru central hub/switch/router kitta connect aagirukum. Ippo miga romba common — office/home WiFi ellam idhu than.</li>
+          <li><b>Bus:</b> Ella devices um oru single shared cable-la connect aagirukum. Old style, andha cable break aana whole network down aagidum.</li>
+          <li><b>Ring:</b> Devices circular loop-la connect aagi, data device-to-device pass aagum, last device first device kitta thirumbi varum.</li>
+          <li><b>Mesh:</b> Ovvoru device um ella other devices kittayum direct connect aagirukum. Highly redundant — oru path fail aanalum vera path irukkum. Cost adhigam, aana critical infrastructure (data centers, military networks) ku use pannuvaanga.</li>
+          <li><b>Hybrid:</b> Mele sonna types-la rendu/moondru combine pannina setup — real world-la periya companies ipdi than use pannuvaanga.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Un veetu WiFi router — phone, laptop, TV ellam router (hub) kitta than direct connect aagirukum, devices-ku devices direct connect aagaathu — idhu <b>Star topology</b>.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <g>
+            <circle cx="75" cy="100" r="18" fill="var(--bg-panel-2)" stroke="#3ddc97" stroke-width="1.5"/>
+            <text class="dtext" x="60" y="104" font-size="9">Hub</text>
+            <circle cx="30" cy="40" r="14" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+            <circle cx="30" cy="160" r="14" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+            <circle cx="120" cy="40" r="14" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+            <circle cx="120" cy="160" r="14" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+            <path class="darrow" stroke="#3ddc97" d="M75,100 L30,40"/>
+            <path class="darrow" stroke="#3ddc97" d="M75,100 L30,160"/>
+            <path class="darrow" stroke="#3ddc97" d="M75,100 L120,40"/>
+            <path class="darrow" stroke="#3ddc97" d="M75,100 L120,160"/>
+            <text class="dtext" x="46" y="98" font-size="9" fill="#3ddc97">STAR</text>
+          </g>
+          <g transform="translate(180,0)">
+            <circle cx="20" cy="40" r="12" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+            <circle cx="90" cy="40" r="12" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+            <circle cx="20" cy="160" r="12" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+            <circle cx="90" cy="160" r="12" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+            <path class="darrow" stroke="#ffb238" d="M20,40 L90,40"/>
+            <path class="darrow" stroke="#ffb238" d="M20,40 L20,160"/>
+            <path class="darrow" stroke="#ffb238" d="M20,40 L90,160"/>
+            <path class="darrow" stroke="#ffb238" d="M90,40 L20,160"/>
+            <path class="darrow" stroke="#ffb238" d="M90,40 L90,160"/>
+            <path class="darrow" stroke="#ffb238" d="M20,160 L90,160"/>
+            <text class="dtext" x="30" y="98" font-size="9" fill="#ffb238">MESH</text>
+          </g>
+        </svg>
+        <div class="diagram-caption">STAR (COMMON) vs MESH (REDUNDANT)</div>
+      </div>
+    </div>
+  </article>
 
   <!-- ===================== HTTP ===================== -->
   <article class="proto" id="http" style="--accent:#4da3ff">
@@ -597,7 +743,7 @@
     </div>
   </article>
 
-  <!-- ===================== SSL/TLS ===================== -->
+  <!-- ===================== SSL / TLS ===================== -->
   <article class="proto" id="ssltls" style="--accent:#ffb238">
     <div class="proto-head">
       <span class="proto-port">PORT 443 (HTTPS) · VARIES BY SERVICE</span>
@@ -700,6 +846,95 @@
           </defs>
         </svg>
         <div class="diagram-caption">TWO CHANNELS — COMMAND + DATA</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== MAC ADDRESS & ARP ===================== -->
+  <article class="proto" id="macarp" style="--accent:#ffb238">
+    <div class="proto-head">
+      <span class="proto-port">DATA LINK LAYER</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">MAC Address &amp; ARP</div>
+        <div class="proto-full">Media Access Control / Address Resolution Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu -- Definition</h4>
+        <p><b>MAC Address</b> -- ovvoru network card (NIC)-kum manufacturer factory-la burn panni kudukkura unique hardware ID (eg: <code style="font-family:var(--mono)">00:1A:2B:3C:4D:5E</code>). IP address maadhiri illama, idhu <b>physical address</b> -- normal-a maaraadhu.</p>
+        <p><b>ARP</b> -- oru device-ku IP address theriyum, aana actual-a data anuppanum na, andha IP address-oda <b>MAC address</b> venum (same network-la mattum). ARP than andha IP-ku correspond aagira MAC address-ah find pannikodukkum.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Device A, IP <code style="font-family:var(--mono)">192.168.1.10</code>-ku data anuppanum, aana MAC address theriyaadhu.</li>
+          <li>Device A network-la ella devices-kum <b>broadcast</b> pannum -- "192.168.1.10 kitta MAC address enna?"</li>
+          <li>Andha IP-oda owner (Device B) mattum reply pannum -- "en MAC address idhu" nu.</li>
+          <li>Device A idha <b>ARP cache/table</b>-la save pannikkum, adutha thadava kekka theva illa.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Un WiFi-la rendu laptops IP address vechi pesukum-bodhu, actual-a data deliver aaguradhu MAC address vazhiya than -- adha ARP than andha lookup panni kodukkum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 180">
+          <rect class="dbox" x="8" y="20" width="80" height="34" rx="8"/>
+          <text class="dtext" x="18" y="41" font-size="9">Device A</text>
+          <rect class="dbox" x="212" y="20" width="80" height="34" rx="8"/>
+          <text class="dtext" x="222" y="41" font-size="9">Device B</text>
+          <rect class="dbox" x="110" y="20" width="80" height="34" rx="8"/>
+          <text class="dtext" x="122" y="41" font-size="9">Broadcast</text>
+          <path class="darrow" stroke="#ffb238" d="M90,37 L108,37" marker-end="url(#am1)"/>
+          <path class="darrow" stroke="#ffb238" d="M190,37 L210,37" marker-end="url(#am2)"/>
+          <text class="dtext" x="70" y="70" font-size="9" fill="#ffb238">"Who has 192.168.1.10?"</text>
+          <path class="darrow" stroke="#3ddc97" d="M212,100 L90,100" marker-end="url(#am3)"/>
+          <text class="dtext" x="90" y="94" font-size="9" fill="#3ddc97">"MAC = 5E:AA:..." (reply)</text>
+          <defs>
+            <marker id="am1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="am2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="am3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">ARP: BROADCAST REQUEST -&gt; DIRECT REPLY</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== PORTS & SOCKETS ===================== -->
+  <article class="proto" id="portsocket" style="--accent:#ffb238">
+    <div class="proto-head">
+      <span class="proto-port">TRANSPORT LAYER CONCEPT</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Ports & Sockets</div>
+        <div class="proto-full">How Multiple Apps Share One IP Address</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>IP address oru <b>building address</b> mathiri nenachukonga — building-la mattum solli letter deliver panna mudiyaathu, exact <b>apartment/flat number</b> venum. Network la andha "apartment number" than <b>Port</b> — 0 to 65535 varaikkum number, edhavadhu specific app/service data-ah receive pannanum nu identify pannuthu.</p>
+        <p><b>Socket</b> = <b>IP address + Port number + Protocol (TCP/UDP)</b> — idhu oru specific "conversation"-ah uniquely identify pannuthu.</p>
+        <h4>Port Ranges</h4>
+        <ol>
+          <li><b>Well-Known Ports (0–1023):</b> Standard services ku reserved — HTTP 80, HTTPS 443, FTP 21, SSH 22, DNS 53 (idha ella already paathom).</li>
+          <li><b>Registered Ports (1024–49151):</b> Specific applications register pannikuvanga (eg: MySQL 3306).</li>
+          <li><b>Ephemeral/Dynamic Ports (49152–65535):</b> Client side temporary-a use pannum, connection open pannumbodhu automatic-a assign aagum.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Nee browser-la 3 tabs open panni, same website (google.com:443) 3-um visit panna, ovvoru tab-kum <b>different ephemeral source port</b> assign aagum (eg: 52001, 52002, 52003) — adhunala server ovvoru tab-oda conversation-ah separate-a track panna mudiyum, destination port (443) same-a irundhalum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 190">
+          <rect class="dbox" x="10" y="20" width="90" height="150" rx="10"/>
+          <text class="dtext-strong" x="20" y="42">192.168.1.5</text>
+          <text class="dtext" x="20" y="58" font-size="8">(IP = building)</text>
+          <rect x="20" y="70" width="70" height="24" rx="4" fill="none" stroke="#ffb238"/>
+          <text class="dtext" x="30" y="86" font-size="9">:443 (web)</text>
+          <rect x="20" y="100" width="70" height="24" rx="4" fill="none" stroke="#3ddc97"/>
+          <text class="dtext" x="30" y="116" font-size="9">:22 (SSH)</text>
+          <rect x="20" y="130" width="70" height="24" rx="4" fill="none" stroke="#4da3ff"/>
+          <text class="dtext" x="24" y="146" font-size="9">:3306 (DB)</text>
+          <text class="dtext" x="115" y="100" font-size="9" fill="var(--text-dim)">Port = "apartment</text>
+          <text class="dtext" x="115" y="113" font-size="9" fill="var(--text-dim)">number" inside</text>
+          <text class="dtext" x="115" y="126" font-size="9" fill="var(--text-dim)">the same IP</text>
+        </svg>
+        <div class="diagram-caption">ONE IP, MANY PORTS = MANY SERVICES</div>
       </div>
     </div>
   </article>
@@ -864,6 +1099,155 @@
     </div>
   </article>
 
+  <!-- ===================== SUBNETTING / CIDR ===================== -->
+  <article class="proto" id="subnetting" style="--accent:#3ddc97">
+    <div class="proto-head">
+      <span class="proto-port">NETWORK LAYER</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Subnetting / CIDR</div>
+        <div class="proto-full">Classless Inter-Domain Routing</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p><b>Subnetting</b> — oru periya network-ah, chinna chinna <b>sub-networks</b>-a divide pannurathu — organization, security, and traffic efficiency-ku. <b>CIDR notation</b> (eg: <code style="font-family:var(--mono)">192.168.1.0/24</code>) — network address-oda "/24" enna solluthu na, first 24 bits <b>network portion</b>-ku, remaining 8 bits <b>host (device) portion</b>-ku.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li><code style="font-family:var(--mono)">/24</code> = subnet mask <code style="font-family:var(--mono)">255.255.255.0</code> — total <b>256 addresses</b> (0-255) kidaikkum.</li>
+          <li>Adhula rendu addresses reserve aagirukum — first one <b>network address</b>, last one <b>broadcast address</b> — so <b>254 usable</b> host addresses than kidaikkum.</li>
+          <li>/24 vida chinna number (eg: /28) — chinna subnet, konjam devices mattum; periya number (eg: /16) — periya subnet, adhigam devices.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Oru company office-la, Sales team-ku <code style="font-family:var(--mono)">192.168.1.0/24</code> subnet, Engineering team-ku <code style="font-family:var(--mono)">192.168.2.0/24</code> subnet kudukalaam — rendu department-oda traffic separate-a irukkum, security um improve aagum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 190">
+          <rect x="10" y="10" width="280" height="34" rx="8" fill="none" stroke="#3ddc97" stroke-width="1.6"/>
+          <text class="dtext" x="18" y="31" fill="#3ddc97" font-size="9">192.168.0.0/16 — Full Company Network</text>
+          <rect class="dbox" x="16" y="60" width="130" height="46" rx="8"/>
+          <text class="dtext" x="24" y="80" font-size="9">Sales</text>
+          <text class="dtext" x="24" y="95" font-size="8" fill="#ffb238">192.168.1.0/24</text>
+          <rect class="dbox" x="154" y="60" width="130" height="46" rx="8"/>
+          <text class="dtext" x="162" y="80" font-size="9">Engineering</text>
+          <text class="dtext" x="162" y="95" font-size="8" fill="#ffb238">192.168.2.0/24</text>
+          <rect class="dbox" x="16" y="120" width="130" height="46" rx="8"/>
+          <text class="dtext" x="24" y="140" font-size="9">HR</text>
+          <text class="dtext" x="24" y="155" font-size="8" fill="#ffb238">192.168.3.0/24</text>
+          <rect class="dbox" x="154" y="120" width="130" height="46" rx="8"/>
+          <text class="dtext" x="162" y="140" font-size="9">Guest WiFi</text>
+          <text class="dtext" x="162" y="155" font-size="8" fill="#ffb238">192.168.4.0/24</text>
+        </svg>
+        <div class="diagram-caption">ONE BIG NETWORK → SPLIT INTO SUBNETS</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== IPv4 vs IPv6 ===================== -->
+  <article class="proto" id="ipv4v6" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">ADDRESSING STANDARD</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">IPv4 vs IPv6</div>
+        <div class="proto-full">Two Generations of IP Addressing</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p><b>IPv4</b> — original addressing system, 1980s-la irundhu use aaguthu. <b>32-bit</b> address, dotted-decimal format-la irukkum (eg: <code style="font-family:var(--mono)">192.168.1.1</code>). Total <b>~4.3 billion</b> addresses mattum than possible — internet grow aana pinnadi, idhu <b>run out</b> aayiduchu!</p>
+        <p><b>IPv6</b> — puthu generation addressing system, IPv4 shortage-ah solve panna vandhadhu. <b>128-bit</b> address, hexadecimal colon-format-la irukkum (eg: <code style="font-family:var(--mono)">2001:0db8:85a3::8a2e:0370:7334</code>). Total addresses — <b>340 undecillion</b> (340 followed by 36 zeros) — practically <b>never run out</b> aagathu.</p>
+
+        <h4>Key Differences</h4>
+        <table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:.86rem;">
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; color:var(--text-dim);">Address Length</td><td style="padding:6px 4px; font-family:var(--mono);">32-bit</td><td style="padding:6px 4px; font-family:var(--mono); color:var(--cyan);">128-bit</td></tr>
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; color:var(--text-dim);">Total Addresses</td><td style="padding:6px 4px; font-family:var(--mono);">~4.3 Billion</td><td style="padding:6px 4px; font-family:var(--mono); color:var(--cyan);">340 Undecillion</td></tr>
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; color:var(--text-dim);">NAT Needed?</td><td style="padding:6px 4px;">Yes (shortage aagum)</td><td style="padding:6px 4px; color:var(--cyan);">No (every device public IP)</td></tr>
+          <tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 4px; color:var(--text-dim);">Config</td><td style="padding:6px 4px;">Manual / DHCP</td><td style="padding:6px 4px; color:var(--cyan);">Auto (SLAAC) / DHCPv6</td></tr>
+          <tr><td style="padding:6px 4px; color:var(--text-dim);">Built-in Security</td><td style="padding:6px 4px;">Optional (add separately)</td><td style="padding:6px 4px; color:var(--cyan);">IPSec built-in</td></tr>
+        </table>
+
+        <h4>Eppadi Transition Aaguthu</h4>
+        <ol>
+          <li>Internet ellame ore neraththil IPv6-ku maaraadhu — adhunala <b>Dual Stack</b> use pannuvaanga: device-ku IPv4 <b>and</b> IPv6 address rendum kudukkuvaanga.</li>
+          <li>Website/server IPv6 support pannaathu na, IPv4-la fallback aagum.</li>
+          <li>Slowly slowly, ISPs, websites, devices ellame IPv6-ku migrate pannikittu varaanga.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> India-la Jio network largely IPv6-la than run aaguthu (mobile data). Un phone settings-la "IPv6" nu kidaikkum, adhu already active-a irukkalam. Google, Facebook, YouTube — ivanga ella sites-um IPv4 and IPv6 rendum support pannuvaanga (dual stack).</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 210">
+          <rect x="8" y="14" width="130" height="60" rx="10" fill="none" stroke="#8a94a3" stroke-width="1.4"/>
+          <text class="dtext-strong" x="16" y="34" font-size="10">IPv4</text>
+          <text class="dtext" x="16" y="52" font-size="9">192.168.1.1</text>
+          <text class="dtext" x="16" y="66" font-size="8" fill="#8a94a3">32-bit, limited</text>
+
+          <rect x="160" y="14" width="132" height="60" rx="10" fill="none" stroke="#3ddc97" stroke-width="1.6"/>
+          <text class="dtext-strong" x="168" y="34" font-size="10" fill="#3ddc97">IPv6</text>
+          <text class="dtext" x="168" y="52" font-size="8">2001:db8::7334</text>
+          <text class="dtext" x="168" y="66" font-size="8" fill="#3ddc97">128-bit, huge</text>
+
+          <rect class="dbox" x="70" y="110" width="160" height="50" rx="10" stroke="#4da3ff"/>
+          <text class="dtext-strong" x="90" y="132" font-size="9">Dual Stack Device</text>
+          <text class="dtext" x="90" y="148" font-size="8">has BOTH addresses</text>
+          <path class="darrow" stroke="#8a94a3" d="M73,74 L120,110" marker-end="url(#i4)"/>
+          <path class="darrow" stroke="#3ddc97" d="M226,74 L180,110" marker-end="url(#i6)"/>
+          <defs>
+            <marker id="i4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8a94a3"/></marker>
+            <marker id="i6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">TRANSITION: DUAL STACK SUPPORTS BOTH</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== NAT DEEP-DIVE, VLAN & ROUTING PROTOCOLS ===================== -->
+  <article class="proto" id="natvlan" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">NETWORK MANAGEMENT</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">NAT Deep-Dive, VLANs & Routing Protocols</div>
+        <div class="proto-full">NAT Types · Virtual LANs · OSPF/BGP</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>NAT — Types (Deep-Dive)</h4>
+        <p>Namba basic NAT already paartha (private IP → public IP). Aana NAT-la <b>3 types</b> irukku:</p>
+        <ul>
+          <li><b>Static NAT:</b> Oru private IP, permanent-a oru specific public IP-ku map aagum (1-to-1). Server hosting-ku use pannuvaanga.</li>
+          <li><b>Dynamic NAT:</b> Private IPs, oru pool of public IPs-la irundhu, available-a irukkura edhavadhu onnu vechi map aagum.</li>
+          <li><b>PAT (Port Address Translation) / NAT Overload:</b> Namba veetu router use pannura type — multiple private IPs, <b>ore</b> public IP-ah share pannuvaanga, aana ovvoru device-kum different <b>port number</b> assign pannuvaanga so router traffic-ah correctly track panna mudiyum.</li>
+        </ul>
+        <h4>VLAN — Virtual LAN</h4>
+        <p>VLAN, ore physical switch-la connect pannirukura devices-ah, <b>logically</b> vera vera networks-ah separate pannuthu — physically vera cable venaam. Idhu security-ku and traffic management-ku romba use aagum.</p>
+        <h4>Routing Protocols — OSPF vs BGP</h4>
+        <ul>
+          <li><b>OSPF (Open Shortest Path First):</b> Oru <b>single organization</b>-oda internal network-la (multiple routers irundhaal), best/fastest path-ah automatic-a find pannurathukku use aagum — <b>Interior Gateway Protocol</b>.</li>
+          <li><b>BGP (Border Gateway Protocol):</b> Vera vera networks/ISPs-ku <b>idaiyeye</b> (between) routing information exchange panna use aagum — idhu than literally <b>whole internet-ah</b> connect pannura protocol. <b>Exterior Gateway Protocol</b>.</li>
+        </ul>
+        <div class="example-box"><b>Real World:</b> Un company internal-a multiple office branches-ah OSPF vechi connect pannalaam. Aana un data, Chennai-la irundhu US server-ku poganum na, andha path-ah decide pannurathu — different ISPs-oda BGP routers than andha "route" decide pannuvaanga, globally.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 210">
+          <rect x="10" y="10" width="130" height="60" rx="8" fill="none" stroke="#3ddc97" stroke-width="1.6"/>
+          <text class="dtext" x="18" y="28" fill="#3ddc97" font-size="9">VLAN 10 — Sales</text>
+          <text class="dtext" x="18" y="42" font-size="8">devices logically</text>
+          <text class="dtext" x="18" y="54" font-size="8">separated</text>
+          <rect x="160" y="10" width="130" height="60" rx="8" fill="none" stroke="#ffb238" stroke-width="1.6"/>
+          <text class="dtext" x="168" y="28" fill="#ffb238" font-size="9">VLAN 20 — HR</text>
+          <text class="dtext" x="168" y="42" font-size="8">same switch, diff</text>
+          <text class="dtext" x="168" y="54" font-size="8">virtual network</text>
+          <rect class="dbox" x="90" y="90" width="120" height="34" rx="8"/>
+          <text class="dtext" x="105" y="111" font-size="9">Physical Switch</text>
+          <text class="dtext" x="20" y="150" font-size="9" fill="#8a94a3">OSPF → routes within your own company</text>
+          <text class="dtext" x="20" y="168" font-size="9" fill="#8a94a3">BGP → routes between ISPs across internet</text>
+        </svg>
+        <div class="diagram-caption">VLAN SEGMENTS ONE SWITCH INTO MANY NETWORKS</div>
+      </div>
+    </div>
+  </article>
+
   <!-- ===================== UDP ===================== -->
   <article class="proto" id="udp" style="--accent:#ff4d5e">
     <div class="proto-head">
@@ -900,6 +1284,149 @@
           </defs>
         </svg>
         <div class="diagram-caption">FAST, NO GUARANTEE</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== UNICAST / MULTICAST / BROADCAST ===================== -->
+  <article class="proto" id="ucast" style="--accent:#ff4d5e">
+    <div class="proto-head">
+      <span class="proto-port">ADDRESSING TYPE</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Unicast / Multicast / Broadcast</div>
+        <div class="proto-full">How Data Gets Addressed to Devices</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>Data anuppumbodhu, adhu <b>evlavu devices ku pogum</b> nu decide pannura 3 types irukku:</p>
+        <ol>
+          <li><b>Unicast:</b> Oru sender → oru specific receiver. Web browsing, most HTTP traffic ellame idhu than — sender to ore oru destination.</li>
+          <li><b>Broadcast:</b> Oru sender → network-la irukkura <b>ella devices-kum</b>. DHCP Discover, ARP request idhu than use pannuthu — "yaaravadhu reply pannunga" nu ellarukkum anuppuvaanga.</li>
+          <li><b>Multicast:</b> Oru sender → specific <b>subscribed group</b> mattum (special IP range 224.0.0.0 – 239.255.255.255 use pannuvaanga). Idhu unicast-um broadcast-um-oda middle ground.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Netflix video stream — ovvoru user-kum separate individual stream (<b>Unicast</b>). IPTV/live TV multicast group-ku mattum stream aagum (<b>Multicast</b> — subscribed devices mattum receive pannum). DHCP request pannumbodhu "IP venum" nu whole network-ku shout pannuvom (<b>Broadcast</b>).</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 210">
+          <text class="dtext" x="10" y="16" fill="#ff4d5e" font-size="9">UNICAST</text>
+          <circle cx="20" cy="40" r="10" fill="var(--bg-panel-2)" stroke="#ff4d5e"/>
+          <circle cx="120" cy="40" r="10" fill="var(--bg-panel-2)" stroke="var(--line)"/>
+          <path class="darrow" stroke="#ff4d5e" d="M32,40 L108,40" marker-end="url(#uc1)"/>
+
+          <text class="dtext" x="10" y="80" fill="#ffb238" font-size="9">MULTICAST (group)</text>
+          <circle cx="20" cy="105" r="10" fill="var(--bg-panel-2)" stroke="#ffb238"/>
+          <circle cx="120" cy="90" r="9" fill="var(--bg-panel-2)" stroke="#ffb238"/>
+          <circle cx="120" cy="120" r="9" fill="var(--bg-panel-2)" stroke="#ffb238"/>
+          <circle cx="120" cy="150" r="9" fill="var(--bg-panel-2)" stroke="var(--line)" stroke-dasharray="2 2"/>
+          <path class="darrow" stroke="#ffb238" d="M32,102 L112,92" marker-end="url(#uc2)"/>
+          <path class="darrow" stroke="#ffb238" d="M32,108 L112,120" marker-end="url(#uc3)"/>
+
+          <text class="dtext" x="180" y="16" fill="#3ddc97" font-size="9">BROADCAST</text>
+          <circle cx="190" cy="40" r="10" fill="var(--bg-panel-2)" stroke="#3ddc97"/>
+          <circle cx="270" cy="20" r="9" fill="var(--bg-panel-2)" stroke="#3ddc97"/>
+          <circle cx="270" cy="45" r="9" fill="var(--bg-panel-2)" stroke="#3ddc97"/>
+          <circle cx="270" cy="70" r="9" fill="var(--bg-panel-2)" stroke="#3ddc97"/>
+          <path class="darrow" stroke="#3ddc97" d="M202,36 L260,22" marker-end="url(#uc4)"/>
+          <path class="darrow" stroke="#3ddc97" d="M202,40 L260,45" marker-end="url(#uc5)"/>
+          <path class="darrow" stroke="#3ddc97" d="M202,44 L260,68" marker-end="url(#uc6)"/>
+          <defs>
+            <marker id="uc1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="uc2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="uc3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="uc4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="uc5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="uc6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">ONE-TO-ONE vs ONE-TO-GROUP vs ONE-TO-ALL</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== MTU & FRAGMENTATION ===================== -->
+  <article class="proto" id="mtu" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">PACKET SIZE LIMIT</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">MTU & Packet Fragmentation</div>
+        <div class="proto-full">Maximum Transmission Unit</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p><b>MTU</b> — oru network link-la, oru single packet-ah split pannaama anuppa mudiyara <b>maximum size</b> (Ethernet-ku typical-a 1500 bytes). Packet idha vida periya irundha, andha link-la travel panna mudiyaathu — split pannanum (<b>fragmentation</b>) illena drop aagidum.</p>
+        <h4>Eppadi Work Aagum</h4>
+        <ol>
+          <li>Sender packet create pannum, andha packet size, path-la irukkura ella links-oda MTU-ah vida periya irundha, problem varum.</li>
+          <li>Router andha packet-ah <b>chinna pieces-a fragment</b> pannum (allow pannirundha), or packet-la "Don't Fragment" flag set aayirundha, router andha packet-ah <b>drop pannitu</b>, sender-ku "fragmentation needed" error anuppum.</li>
+          <li>Idha vechi than <b>Path MTU Discovery</b> work aaguthu — sender gradually correct packet size figure out pannikuvaan.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> VPN use pannumbodhu, encryption overhead-ala effective MTU kammi aagum — configure sariya pannaama irundha, konjam websites open aagaama irukkalam (fragmentation issues). Idhu than common VPN troubleshooting reason.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 170">
+          <rect class="dbox" x="10" y="20" width="270" height="40" rx="6" stroke="#ff4d5e"/>
+          <text class="dtext" x="20" y="44" fill="#ff4d5e">Big Packet (3000 bytes) — exceeds MTU 1500</text>
+          <text class="dtext" x="130" y="80" fill="var(--text-dim)">↓ fragmented into ↓</text>
+          <rect class="dbox" x="10" y="100" width="130" height="34" rx="6" stroke="#3ddc97"/>
+          <text class="dtext" x="20" y="121" fill="#3ddc97" font-size="9">Fragment 1 (1500B)</text>
+          <rect class="dbox" x="150" y="100" width="130" height="34" rx="6" stroke="#3ddc97"/>
+          <text class="dtext" x="160" y="121" fill="#3ddc97" font-size="9">Fragment 2 (1500B)</text>
+        </svg>
+        <div class="diagram-caption">OVERSIZED PACKET → SPLIT AT MTU LIMIT</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== ICMP / PING / TRACEROUTE ===================== -->
+  <article class="proto" id="icmp" style="--accent:#3ddc97">
+    <div class="proto-head">
+      <span class="proto-port">NETWORK LAYER · DIAGNOSTICS</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">ICMP / Ping / Traceroute</div>
+        <div class="proto-full">Internet Control Message Protocol</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p><b>ICMP</b> — regular data transfer-ku alla, <b>diagnostic and error reporting</b>-ku use aagura protocol. "Idhu host reachable-a?", "Enna problem irundhuchu?" nu sollurathu ICMP oda vela.</p>
+        <h4>Ping — Eppadi Work Aagum</h4>
+        <ol>
+          <li>Nee <code style="font-family:var(--mono)">ping google.com</code> type panna, un computer ICMP <b>Echo Request</b> anuppum.</li>
+          <li>Target server, ICMP <b>Echo Reply</b> vechi respond pannum.</li>
+          <li>Round-trip time (latency) measure aagum — "google.com is up, 24ms" mathiri.</li>
+        </ol>
+        <h4>Traceroute — Eppadi Work Aagum</h4>
+        <p>Traceroute, un data destination-ku pogum vaikkula <b>ovvoru router (hop)</b>-um kaattum — TTL (Time To Live) value-ah 1, 2, 3 nu increase panni, ovvoru router-layum "TTL expired" error anuppa vechi, path-ah map pannuthu.</p>
+        <div class="example-box"><b>Real World:</b> Internet slow-a irundhaa, <code style="font-family:var(--mono)">traceroute</code> run panni, exact-a enga (edhu router-la) delay aaguthu nu find panna mudiyum — troubleshooting-ku romba use aagum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 180">
+          <rect class="dbox" x="10" y="20" width="70" height="34" rx="8"/>
+          <text class="dtext" x="22" y="41" font-size="9">You</text>
+          <rect class="dbox" x="90" y="20" width="60" height="34" rx="8"/>
+          <text class="dtext" x="98" y="41" font-size="8">Hop 1</text>
+          <rect class="dbox" x="160" y="20" width="60" height="34" rx="8"/>
+          <text class="dtext" x="168" y="41" font-size="8">Hop 2</text>
+          <rect class="dbox" x="230" y="20" width="60" height="34" rx="8"/>
+          <text class="dtext" x="235" y="41" font-size="8">Server</text>
+          <path class="darrow" stroke="#3ddc97" d="M80,37 L88,37" marker-end="url(#tr1)"/>
+          <path class="darrow" stroke="#3ddc97" d="M150,37 L158,37" marker-end="url(#tr2)"/>
+          <path class="darrow" stroke="#3ddc97" d="M220,37 L228,37" marker-end="url(#tr3)"/>
+          <text class="dtext" x="15" y="80" fill="#3ddc97" font-size="9">Ping: "Are you alive?" → "Yes, 24ms"</text>
+          <text class="dtext" x="15" y="105" fill="#ffb238" font-size="9">Traceroute: shows EVERY hop in between</text>
+          <text class="dtext" x="15" y="125" font-size="8" fill="#8a94a3">Useful to find WHERE a connection is slow</text>
+          <defs>
+            <marker id="tr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="tr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="tr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">PING = IS IT ALIVE? TRACEROUTE = WHAT'S THE PATH?</div>
       </div>
     </div>
   </article>
@@ -1201,6 +1728,218 @@
     </div>
   </article>
 
+  <!-- ===================== FIREWALLS & VPN ===================== -->
+  <article class="proto" id="firewallvpn" style="--accent:#ff4d5e">
+    <div class="proto-head">
+      <span class="proto-port">SECURITY INFRASTRUCTURE</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Firewalls & VPNs</div>
+        <div class="proto-full">Traffic Filtering & Encrypted Tunneling — In Detail</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Firewall — Definition</h4>
+        <p>Firewall, trusted internal network-kum, untrusted internet-kum <b>idaiyeye</b> nikkura oru "gatekeeper" — rules vechi, traffic-ah <b>allow</b> pannuma illa <b>block</b> pannuma nu decide pannuthu.</p>
+        <ul>
+          <li><b>Packet-Filtering Firewall:</b> Basic — IP address, port number vechi mattum allow/block pannum.</li>
+          <li><b>Stateful Firewall:</b> Connection-oda "state" track pannum — already established connection-oda traffic mattum allow pannum.</li>
+          <li><b>Next-Gen Firewall (NGFW):</b> Deep packet inspection, application-level filtering, intrusion detection ellam sernthu irukkum.</li>
+          <li><b>WAF (Web Application Firewall):</b> Namba security section-la paartha maadhiri, specifically website attacks (SQLi, XSS) thadukkum.</li>
+        </ul>
+        <h4>VPN — Definition</h4>
+        <p>VPN, un device-kkum oru VPN server-kkum idaiyeye oru <b>encrypted tunnel</b> create pannum. Un real IP hide aagum, traffic ellam encrypted-a poi, VPN server-oda IP-la than "exit" aagum.</p>
+        <ol>
+          <li>Un device VPN app vechi VPN server-ku connect aagum (encrypted).</li>
+          <li>Un ella internet traffic-um indha tunnel vazhiyaa than pogum — un ISP-kooda andha data padikka mudiyaadhu.</li>
+          <li>VPN server, un traffic-ah real destination-ku forward pannum — destination server-ku, VPN server-oda IP than theriyum.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Remote employees, company internal systems access panna VPN use pannuvaanga — office network inside-la irukkura maadhiri secure-a connect aaguvaanga, veetu-la irundhe vela pannalum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 200">
+          <rect class="dbox" x="10" y="15" width="80" height="34" rx="8"/>
+          <text class="dtext" x="25" y="36" font-size="9">Internet</text>
+          <rect x="115" y="15" width="70" height="34" rx="8" fill="none" stroke="#ff4d5e" stroke-width="1.8"/>
+          <text class="dtext" x="122" y="36" fill="#ff4d5e" font-size="9">Firewall</text>
+          <rect class="dbox" x="210" y="15" width="80" height="34" rx="8"/>
+          <text class="dtext" x="218" y="36" font-size="9">Your Network</text>
+          <path class="darrow" stroke="#ff4d5e" d="M90,32 L113,32" marker-end="url(#fw1)"/>
+          <path class="darrow" stroke="#ff4d5e" d="M185,32 L208,32" marker-end="url(#fw2)"/>
+
+          <rect class="dbox" x="10" y="90" width="70" height="34" rx="8"/>
+          <text class="dtext" x="24" y="111" font-size="9">You</text>
+          <rect x="115" y="90" width="90" height="34" rx="17" fill="none" stroke="#3ddc97" stroke-width="1.6" stroke-dasharray="4 4"/>
+          <text class="dtext" x="123" y="111" fill="#3ddc97" font-size="8">Encrypted Tunnel</text>
+          <rect class="dbox" x="230" y="90" width="60" height="34" rx="8"/>
+          <text class="dtext" x="235" y="111" font-size="8">VPN Server</text>
+          <path class="darrow" stroke="#3ddc97" d="M80,107 L113,107" marker-end="url(#fw3)"/>
+          <path class="darrow" stroke="#3ddc97" d="M205,107 L228,107" marker-end="url(#fw4)"/>
+          <text class="dtext" x="15" y="155" fill="#8a94a3" font-size="8">Firewall filters traffic in/out of a network</text>
+          <text class="dtext" x="15" y="170" fill="#8a94a3" font-size="8">VPN encrypts YOUR traffic end-to-end</text>
+          <defs>
+            <marker id="fw1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="fw2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="fw3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="fw4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">FIREWALL FILTERS · VPN ENCRYPTS</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== PROXY SERVERS ===================== -->
+  <article class="proto" id="proxy" style="--accent:#3ddc97">
+    <div class="proto-head">
+      <span class="proto-port">INTERMEDIARY SERVER</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Proxy Servers</div>
+        <div class="proto-full">Forward Proxy vs Reverse Proxy</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>Proxy — client-kum destination server-kum <b>idaiyele</b> nikkura oru intermediary server. Rendu types irukku:</p>
+        <ol>
+          <li><b>Forward Proxy:</b> Client(s)-oda front-la nikkum — client-oda identity-ah internet-ku hide pannum. Companies employees-oda internet access control panna, content filter panna use pannuvaanga.</li>
+          <li><b>Reverse Proxy:</b> Server(s)-oda front-la nikkum — server-oda identity-ah internet-ku irundhu hide pannum. Load balancing, caching, SSL termination, extra security layer ku use pannuvaanga (eg: Nginx, Cloudflare).</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Office network-la social media block aaguthu na, adhu <b>Forward Proxy</b> than pannuthu. Cloudflare oru website-oda front-la nikkumbodhu — visitors real backend server IP-ah pakka mudiyaathu, adhu <b>Reverse Proxy</b>.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 190">
+          <text class="dtext" x="10" y="16" fill="#3ddc97" font-size="9">FORWARD PROXY</text>
+          <rect class="dbox" x="10" y="24" width="70" height="34" rx="6"/>
+          <text class="dtext" x="20" y="45" font-size="9">Client</text>
+          <rect class="dbox" x="110" y="24" width="70" height="34" rx="6" stroke="#3ddc97"/>
+          <text class="dtext" x="118" y="45" font-size="9">Proxy</text>
+          <rect class="dbox" x="210" y="24" width="70" height="34" rx="6"/>
+          <text class="dtext" x="215" y="45" font-size="8">Internet</text>
+          <path class="darrow" stroke="#3ddc97" d="M82,41 L108,41" marker-end="url(#px1)"/>
+          <path class="darrow" stroke="#3ddc97" d="M182,41 L208,41" marker-end="url(#px2)"/>
+
+          <text class="dtext" x="10" y="100" fill="#ffb238" font-size="9">REVERSE PROXY</text>
+          <rect class="dbox" x="10" y="108" width="70" height="34" rx="6"/>
+          <text class="dtext" x="15" y="129" font-size="8">Internet</text>
+          <rect class="dbox" x="110" y="108" width="70" height="34" rx="6" stroke="#ffb238"/>
+          <text class="dtext" x="118" y="129" font-size="9">Proxy</text>
+          <rect class="dbox" x="210" y="108" width="70" height="34" rx="6"/>
+          <text class="dtext" x="218" y="129" font-size="9">Servers</text>
+          <path class="darrow" stroke="#ffb238" d="M82,125 L108,125" marker-end="url(#px3)"/>
+          <path class="darrow" stroke="#ffb238" d="M182,125 L208,125" marker-end="url(#px4)"/>
+          <defs>
+            <marker id="px1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="px2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="px3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="px4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">FORWARD = HIDES CLIENT · REVERSE = HIDES SERVER</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== LOAD BALANCERS & CDN ===================== -->
+  <article class="proto" id="lbcdn" style="--accent:#ffb238">
+    <div class="proto-head">
+      <span class="proto-port">SCALE & PERFORMANCE</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Load Balancers & CDNs</div>
+        <div class="proto-full">Traffic Distribution & Content Delivery</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Load Balancer — Definition</h4>
+        <p>Popular website-ku millions of users vandhaa, oru <b>single server</b> handle panna mudiyaathu. Load Balancer, incoming traffic-ah <b>multiple backend servers</b>-ku evenly distribute pannum, so oru server mattum overload aagaathu.</p>
+        <ol>
+          <li>Client request Load Balancer-ku varum.</li>
+          <li>LB, "eppo idha route pannanum" nu decide pannum (Round Robin — order-la kodukkum, or Least Connections — kammi busy-a irukkura server-ku kodukkum).</li>
+          <li>Selected backend server request handle panni response kodukkum, LB vazhiyaa client-ku poi serum.</li>
+          <li>Oru server down aana kooda, LB automatic-a andha server-ah skip panni, remaining servers-ku traffic route pannum — <b>high availability</b>.</li>
+        </ol>
+        <h4>CDN — Definition</h4>
+        <p>CDN (Content Delivery Network), world-wide different locations-la <b>edge servers</b> vechi, website-oda static content (images, videos, JS/CSS files)-ah <b>cache</b> pannum. User, origin server-ku (eg: US-la irukkum) pogaama, thanoda <b>nearest edge server</b>-la irundhe content vaanguvaan — romba fast.</p>
+        <div class="example-box"><b>Real World:</b> Netflix/YouTube video stream panna, Chennai-la irukkura user, US-la irukkura origin server-ku connect aagaadhu — Chennai/Mumbai-la irukkura CDN edge server-la irundhe video varum. Amazon, high-traffic sale days-la (Big Billion Days) Load Balancer use panni, thousands of servers-ku traffic split pannum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 210">
+          <rect class="dbox" x="10" y="15" width="70" height="34" rx="8"/>
+          <text class="dtext" x="20" y="36" font-size="9">Users</text>
+          <rect x="115" y="15" width="80" height="34" rx="17" fill="none" stroke="#ffb238" stroke-width="1.8"/>
+          <text class="dtext" x="122" y="36" fill="#ffb238" font-size="8">Load Balancer</text>
+          <rect class="dbox" x="230" y="0" width="60" height="26" rx="6"/>
+          <text class="dtext" x="238" y="17" font-size="8">Server 1</text>
+          <rect class="dbox" x="230" y="30" width="60" height="26" rx="6"/>
+          <text class="dtext" x="238" y="47" font-size="8">Server 2</text>
+          <rect class="dbox" x="230" y="60" width="60" height="26" rx="6"/>
+          <text class="dtext" x="238" y="77" font-size="8">Server 3</text>
+          <path class="darrow" stroke="#ffb238" d="M80,32 L113,32" marker-end="url(#lb1)"/>
+          <path class="darrow" stroke="#ffb238" d="M195,25 L228,13" marker-end="url(#lb2)"/>
+          <path class="darrow" stroke="#ffb238" d="M195,32 L228,43" marker-end="url(#lb3)"/>
+          <path class="darrow" stroke="#ffb238" d="M195,38 L228,73" marker-end="url(#lb4)"/>
+
+          <rect class="dbox" x="10" y="120" width="70" height="30" rx="8"/>
+          <text class="dtext" x="18" y="139" font-size="8">User (Chennai)</text>
+          <rect x="110" y="120" width="80" height="30" rx="8" fill="none" stroke="#3ddc97" stroke-width="1.6"/>
+          <text class="dtext" x="118" y="139" fill="#3ddc97" font-size="8">CDN Edge (Mumbai)</text>
+          <rect class="dbox" x="220" y="120" width="70" height="30" rx="8"/>
+          <text class="dtext" x="228" y="139" font-size="8">Origin (US)</text>
+          <path class="darrow" stroke="#3ddc97" d="M80,135 L108,135" marker-end="url(#lb5)"/>
+          <text class="dtext" x="20" y="170" fill="#8a94a3" font-size="8">Content cached nearby = fast delivery</text>
+          <defs>
+            <marker id="lb1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="lb2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="lb3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="lb4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb238"/></marker>
+            <marker id="lb5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">LOAD BALANCER SPREADS TRAFFIC · CDN SERVES FROM NEARBY</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== BANDWIDTH vs LATENCY vs THROUGHPUT ===================== -->
+  <article class="proto" id="bandwidth" style="--accent:#ffb238">
+    <div class="proto-head">
+      <span class="proto-port">PERFORMANCE CONCEPT</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Bandwidth vs Latency vs Throughput</div>
+        <div class="proto-full">Three Different Speed Metrics</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>Moondrum "speed" nu solvom, aana <b>different</b> things:</p>
+        <ol>
+          <li><b>Bandwidth:</b> Connection-oda <b>maximum theoretical capacity</b> — Mbps/Gbps la measure pannuvom. Highway-oda "how many lanes" nu nenachukonga.</li>
+          <li><b>Latency:</b> Data source-la irundhu destination-ku poi varakkum <b>delay time</b> — milliseconds (ms) la measure pannuvom. Oru car trip complete panna eduthukkura <b>time</b> mathiri.</li>
+          <li><b>Throughput:</b> Real-world-la <b>actually transfer aagura data</b> — congestion, packet loss, overhead ellam consider pannitu. Bandwidth-ah vida <b>always kammi</b>-a than irukkum practical-a.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Satellite internet — high bandwidth (100 Mbps) irundhalum, high latency (600ms+) irukkum, adhunala download fast-a irundhalum, online gaming lag aagum. Fiber broadband — bandwidth kammi-a irundhalum, low latency-ala calls/gaming smooth-a irukkum.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 170">
+          <rect x="10" y="20" width="280" height="40" fill="none" stroke="var(--line)"/>
+          <line x1="10" y1="33" x2="290" y2="33" stroke="var(--line)"/>
+          <line x1="10" y1="47" x2="290" y2="47" stroke="var(--line)"/>
+          <text class="dtext" x="15" y="15" fill="#ffb238" font-size="9">Bandwidth = number of lanes</text>
+          <circle cx="40" cy="26" r="5" fill="#ff4d5e"/>
+          <circle cx="90" cy="40" r="5" fill="#4da3ff"/>
+          <circle cx="140" cy="53" r="5" fill="#3ddc97"/>
+          <text class="dtext" x="15" y="90" fill="#4da3ff" font-size="9">Latency = time for one car to finish trip</text>
+          <text class="dtext" x="15" y="120" fill="#3ddc97" font-size="9">Throughput = cars actually completing trip</text>
+          <text class="dtext" x="15" y="150" fill="var(--text-dim)" font-size="9">(always ≤ bandwidth, due to real traffic)</text>
+        </svg>
+        <div class="diagram-caption">HIGHWAY ANALOGY: LANES vs TRIP TIME vs CARS ARRIVED</div>
+      </div>
+    </div>
+  </article>
+
   <!-- ===================== REST API ===================== -->
   <article class="proto" id="restapi" style="--accent:#4da3ff">
     <div class="proto-head">
@@ -1274,6 +2013,99 @@
     </div>
   </article>
 
+  <!-- ===================== API AUTHENTICATION ===================== -->
+  <article class="proto" id="apiauth" style="--accent:#ff4d5e">
+    <div class="proto-head">
+      <span class="proto-port">REST API SECURITY</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">API Authentication</div>
+        <div class="proto-full">API Keys / JWT / OAuth 2.0</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>REST API section-la paatha maadhiri, API "yaaru call panniranga" nu verify panna 3 common methods irukku:</p>
+        <ol>
+          <li><b>API Key:</b> Simple secret string, request header-la anuppuvom — "idha entha app/developer" nu identify pannurathukku. Simple, aana per-user security kammi.</li>
+          <li><b>JWT (JSON Web Token):</b> User login aana pinnadi, server oru <b>signed token</b> kudukkum — adhula user info irukkum. Client andha token-ah ovvoru request-layum anuppum, server database check pannaama, signature verify panni than trust pannum — idhu <b>stateless authentication</b>.</li>
+          <li><b>OAuth 2.0:</b> Oru user, thanoda password share pannaama, <b>third-party app-ku limited access</b> kudukkura framework. "Sign in with Google" button — idhu OAuth than.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Banking app login pannina pinnadi JWT token use pannum. "Login with Google" button click panna — OAuth flow than run aagum. Weather API developer account create pannina kudukkura key — API Key.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 190">
+          <rect class="dbox" x="10" y="20" width="70" height="34" rx="6"/>
+          <text class="dtext" x="18" y="41" font-size="9">User/App</text>
+          <rect class="dbox" x="115" y="20" width="70" height="34" rx="6"/>
+          <text class="dtext" x="122" y="41" font-size="8">Your App</text>
+          <rect class="dbox" x="220" y="20" width="70" height="34" rx="6" stroke="#ff4d5e"/>
+          <text class="dtext" x="230" y="41" font-size="9">Google</text>
+          <path class="darrow" stroke="#ff4d5e" d="M82,37 L113,37" marker-end="url(#oa1)"/>
+          <text class="dtext" x="85" y="15" font-size="7">1. Click "Login"</text>
+          <path class="darrow" stroke="#ff4d5e" d="M187,37 L218,37" marker-end="url(#oa2)"/>
+          <text class="dtext" x="190" y="15" font-size="7">2. Redirect</text>
+          <path class="darrow" stroke="#3ddc97" d="M218,60 L187,60" marker-end="url(#oa3)"/>
+          <text class="dtext" x="188" y="75" font-size="7">3. User approves</text>
+          <path class="darrow" stroke="#3ddc97" d="M113,60 L82,60" marker-end="url(#oa4)"/>
+          <text class="dtext" x="85" y="75" font-size="7">4. Token issued</text>
+          <rect x="30" y="110" width="230" height="40" rx="8" fill="none" stroke="#3ddc97" stroke-width="1.6"/>
+          <text class="dtext" x="45" y="135" fill="#3ddc97" font-size="9">User never shares password with your app</text>
+          <defs>
+            <marker id="oa1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="oa2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff4d5e"/></marker>
+            <marker id="oa3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+            <marker id="oa4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-caption">OAUTH 2.0 — "LOGIN WITH GOOGLE" FLOW</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== ZERO TRUST NETWORKING ===================== -->
+  <article class="proto" id="zerotrust" style="--accent:#4da3ff">
+    <div class="proto-head">
+      <span class="proto-port">MODERN SECURITY MODEL</span>
+      <div class="proto-title-wrap">
+        <div class="proto-title">Zero Trust Networking</div>
+        <div class="proto-full">"Never Trust, Always Verify"</div>
+      </div>
+    </div>
+    <div class="proto-grid">
+      <div class="proto-body">
+        <h4>Enna Idhu — Definition</h4>
+        <p>Old model — "castle and moat": oru device company network <b>inside</b>-la irundha, automatic-a trust pannuvom. Zero Trust idha reject pannuthu — <b>where request vandhaalum</b> (inside office-layum irundhalum), <b>every single request</b>-ah verify pannanum than.</p>
+        <h4>Core Principles</h4>
+        <ol>
+          <li><b>Verify Explicitly:</b> Ovvoru request-um, ovvoru time-um authenticate/authorize pannanum — one-time login-a trust pannaadhu.</li>
+          <li><b>Least Privilege Access:</b> User/device-ku evlavu access required, adhai mattum kudukkanum — extra access illama.</li>
+          <li><b>Assume Breach:</b> Network already compromise aayiruchu nu nenachukittu design pannanum — segment pannunga, encrypt pannunga, continuously monitor pannunga.</li>
+        </ol>
+        <div class="example-box"><b>Real World:</b> Employee office-la physically irundhu, office WiFi-la connect aayirundhalum, company app access panna <b>MFA + device verification</b> venum — "office-la irukkiye" nu automatic trust kudukka maattanga. Google, Microsoft ellam ippo Zero Trust model-ku maariduchanga.</div>
+      </div>
+      <div class="diagram-box">
+        <svg viewBox="0 0 300 190">
+          <text class="dtext" x="10" y="16" fill="#ff4d5e" font-size="9">OLD: PERIMETER MODEL</text>
+          <rect x="10" y="24" width="280" height="50" rx="8" fill="none" stroke="#ff4d5e" stroke-width="1.6" stroke-dasharray="3 3"/>
+          <text class="dtext" x="20" y="45" font-size="8">Inside network = automatically trusted</text>
+          <circle cx="40" cy="60" r="8" fill="var(--bg-panel-2)" stroke="#3ddc97"/>
+          <circle cx="90" cy="60" r="8" fill="var(--bg-panel-2)" stroke="#3ddc97"/>
+          <circle cx="140" cy="60" r="8" fill="var(--bg-panel-2)" stroke="#3ddc97"/>
+
+          <text class="dtext" x="10" y="100" fill="#3ddc97" font-size="9">NEW: ZERO TRUST</text>
+          <circle cx="40" cy="140" r="8" fill="var(--bg-panel-2)" stroke="#ffb238"/>
+          <text class="dtext" x="15" y="165" font-size="7">✓ verified</text>
+          <circle cx="140" cy="140" r="8" fill="var(--bg-panel-2)" stroke="#ffb238"/>
+          <text class="dtext" x="115" y="165" font-size="7">✓ verified</text>
+          <circle cx="240" cy="140" r="8" fill="var(--bg-panel-2)" stroke="#ffb238"/>
+          <text class="dtext" x="215" y="165" font-size="7">✓ verified</text>
+          <text class="dtext" x="15" y="115" font-size="8" fill="var(--text-dim)">Every request checked — location doesn't matter</text>
+        </svg>
+        <div class="diagram-caption">TRUST BY LOCATION → TRUST BY VERIFICATION</div>
+      </div>
+    </div>
+  </article>
 </main>
 
 <!-- ============ WEBSITE SECURITY ============ -->
